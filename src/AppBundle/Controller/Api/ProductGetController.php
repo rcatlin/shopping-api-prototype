@@ -9,6 +9,7 @@ use FOS\RestBundle\Controller\FOSRestController;
 use InvalidArgumentException;
 use JMS\DiExtraBundle\Annotation as DI;
 use JMS\Serializer\Serializer;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,6 +37,16 @@ class ProductGetController extends FOSRestController
 
     /**
      * Retrieves a product by UUID
+     *
+     * @ApiDoc(
+     *     resource=true,
+     *     description="Retrieve a Product by UUID",
+     *     statusCodes={
+     *         200="Product with given UUID found",
+     *         400="Invalid UUID provided",
+     *         404="Product was not found given the UUID"
+     *     }
+     * )
      *
      * @Route("/{uuid}", name="api_get_product")
      * @Method({"GET"})
