@@ -2,10 +2,8 @@
 
 namespace AppBundle\Controller\Api;
 
-use AppBundle\HandlesPost;
-use AppBundle\RenderFormErrors;
+use AppBundle\Entity\Product;
 use AppBundle\RendersJson;
-use Doctrine\Bundle\DoctrineBundle\Registry;
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use JMS\DiExtraBundle\Annotation as DI;
@@ -18,16 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class ProductCreateController extends FOSRestController
 {
-    use HandlesPost;
-    use RenderFormErrors;
     use RendersJson;
-
-    /**
-     * @DI\Inject("doctrine")
-     *
-     * @var Registry
-     */
-    private $doctrine;
 
     /**
      * @DI\Inject("jms_serializer")
@@ -48,22 +37,26 @@ class ProductCreateController extends FOSRestController
      */
     public function create(Request $request)
     {
-        $form = $this->handlePost(
-            $this->createForm('AppBundle\Form\ProductType'),
-            $request
-        );
+        $form = $this
+            ->createForm('AppBundle\Form\ProductType')
+            ->submit(
+                json_decode($request->getContent(), true)
+            );
 
-        if (null !== ($formErrorResponse = $this->renderFormErrors($form))) {
-            return $formErrorResponse;
+        if (!$form->isValid()) {
+            $errors = [];
+            foreach ($form->getErrors(true) as $error) {
+                $errors[] = $error->getMessage();
+            }
+
+            return $this->renderJson(400, $errors);
         }
 
+        /** @var Product $product */
         $product = $form->getData();
+        $manager = $this->getDoctrine()->getManager();
 
         try {
-            $manager = $this
-                ->doctrine
-                ->getManager();
-
             $manager->persist($product);
             $manager->flush();
         } catch (\Exception $exception) {
@@ -72,7 +65,7 @@ class ProductCreateController extends FOSRestController
                 [
                     'errors' => [
                         $exception->getMessage(),
-                    ],
+                    ]
                 ]
             );
         }
