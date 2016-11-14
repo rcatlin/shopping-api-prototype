@@ -50,6 +50,29 @@ class Product
      */
     private $name;
 
+    /**
+     * Price in Minor Units (US pennies)
+     *
+     * @var integer
+     *
+     * @Assert\Type(
+     *     type="integer",
+     *     message="Price must be an integer."
+     * )
+     * @Assert\Range(
+     *     min=1,
+     *     minMessage="Price must be greater than or equal to a US penny."
+     * )
+     *
+     * @ORM\Column(name="price", type="bigint", nullable=true)
+     *
+     * @Serializer\Expose()
+     * @Serializer\Accessor(getter="getPrice", setter="setPrice")
+     * @Serializer\SerializedName("price")
+     * @Serializer\Type("integer")
+     */
+    private $price;
+
 
     /**
      * Get id
@@ -83,6 +106,22 @@ class Product
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPrice()
+    {
+        return $this->price;
+    }
+
+    /**
+     * @param int $price
+     */
+    public function setPrice($price)
+    {
+        $this->price = $price;
     }
 }
 
