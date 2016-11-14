@@ -2,9 +2,9 @@
 
 namespace Tests\AppBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Tests\Functional\AppBundle\Controller\AbstractControllerTestCase;
 
-class DefaultControllerTest extends WebTestCase
+class DefaultControllerTest extends AbstractControllerTestCase
 {
     public function testIndex()
     {
