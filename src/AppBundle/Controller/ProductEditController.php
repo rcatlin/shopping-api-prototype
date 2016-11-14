@@ -4,11 +4,14 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Product;
 use AppBundle\RendersJson;
+use AppBundle\Repository\ProductRepository;
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
+use InvalidArgumentException;
 use JMS\DiExtraBundle\Annotation as DI;
 use JMS\Serializer\Serializer;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,6 +24,13 @@ class ProductEditController extends FOSRestController
     use RendersJson;
 
     /**
+     * @DI\Inject("repository.product")
+     *
+     * @var ProductRepository
+     */
+    private $repository;
+
+    /**
      * @DI\Inject("jms_serializer")
      *
      * @var Serializer
@@ -28,7 +38,7 @@ class ProductEditController extends FOSRestController
     private $serializer;
 
     /**
-     * Creates as New Product
+     * Edits an Existing Product
      *
      * @ApiDoc(
      *     resource=true,
@@ -42,16 +52,30 @@ class ProductEditController extends FOSRestController
      * )
      *
      * @Method({"PUT"})
-     * @Route(path="", name="api_product_create")
+     * @Route(path="/{uuid}", name="api_product_edit")
      *
      * @param Request $request
+     * @param string $uuid
      *
      * @return Response
      */
-    public function create(Request $request)
+    public function edit(Request $request, $uuid)
     {
+        try {
+            $binaryUuid = Uuid::fromString($uuid);
+        } catch (InvalidArgumentException $exception) {
+            return $this->renderJson(
+                400,
+                [
+                    'message' => $exception->getMessage(),
+                ]
+            );
+        }
+
+        $product = $this->repository->find($binaryUuid);
+
         $form = $this
-            ->createForm('AppBundle\Form\ProductType')
+            ->createForm('AppBundle\Form\ProductType', $product)
             ->submit(
                 json_decode($request->getContent(), true)
             );
@@ -62,7 +86,9 @@ class ProductEditController extends FOSRestController
                 $errors[] = $error->getMessage();
             }
 
-            return $this->renderJson(400, $errors);
+            return $this->renderJson(400, [
+                'errors' => $errors,
+            ]);
         }
 
         /** @var Product $product */
