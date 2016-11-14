@@ -27,7 +27,7 @@ class ProductController extends FOSRestController
     private $repository;
 
     /**
-     * Finds a product by UUID
+     * Retrieves a product by UUID
      *
      * @Route("/{uuid}", name="api_get_product")
      * @Method({"GET"})
@@ -36,7 +36,7 @@ class ProductController extends FOSRestController
      *
      * @return Response
      */
-    public function getProductById($uuid)
+    public function getByUuid($uuid)
     {
         try {
             $binaryUuid = Uuid::fromString($uuid);
