@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Controller\Api;
+namespace AppBundle\Controller;
 
 use AppBundle\RendersJson;
 use AppBundle\Repository\ProductRepository;
