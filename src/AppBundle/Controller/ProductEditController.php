@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * @Route(path="/api/products")
  */
-class ProductCreateController extends FOSRestController
+class ProductEditController extends FOSRestController
 {
     use RendersJson;
 
