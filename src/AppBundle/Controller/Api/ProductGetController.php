@@ -8,6 +8,7 @@ use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use InvalidArgumentException;
 use JMS\DiExtraBundle\Annotation as DI;
+use JMS\Serializer\Serializer;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,7 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * @Route("/api/products")
  */
-class ProductController extends FOSRestController
+class ProductGetController extends FOSRestController
 {
     use RendersJson;
 
@@ -25,6 +26,13 @@ class ProductController extends FOSRestController
      * @var ProductRepository
      */
     private $repository;
+
+    /**
+     * @DI\Inject("jms_serializer", required=true)
+     *
+     * @var Serializer
+     */
+    private $serializer;
 
     /**
      * Retrieves a product by UUID
@@ -61,10 +69,7 @@ class ProductController extends FOSRestController
         return $this->renderJson(
             200,
             [
-                'result' => [
-                    'id' => $product->getId(),
-                    'name' => $product->getName(),
-                ]
+                'result' => $this->serializer->toArray($product),
             ]
         );
     }

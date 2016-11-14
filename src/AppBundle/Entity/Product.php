@@ -3,12 +3,16 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serializer;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Product
  *
  * @ORM\Table(name="product")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\ProductRepository")
+ *
+ * @Serializer\ExclusionPolicy("all")
  */
 class Product
 {
@@ -19,13 +23,30 @@ class Product
      * @ORM\Column(name="id", type="uuid_binary")
      * @ORM\GeneratedValue(strategy="CUSTOM")
      * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
+     *
+     * @Serializer\Expose()
+     * @Serializer\Accessor(getter="getId")
+     * @Serializer\ReadOnly(true)
+     * @Serializer\SerializedName("id")
+     * @Serializer\Type("string")
      */
     private $id;
 
     /**
      * @var string
      *
+     * @Assert\NotBlank(message="Name should not be blank.")
+     * @Assert\Type(
+     *     type="string",
+     *     message="Name must be a valid string."
+     * )
+     *
      * @ORM\Column(name="name", type="string", length=255)
+     *
+     * @Serializer\Expose()
+     * @Serializer\Accessor(getter="getName", setter="setName")
+     * @Serializer\SerializedName("name")
+     * @Serializer\Type("string")
      */
     private $name;
 
