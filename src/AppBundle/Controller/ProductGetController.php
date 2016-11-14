@@ -2,15 +2,15 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Handler\ProductHandler;
 use AppBundle\RendersJson;
-use AppBundle\Repository\ProductRepository;
+use Doctrine\ORM\EntityNotFoundException;
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use InvalidArgumentException;
 use JMS\DiExtraBundle\Annotation as DI;
 use JMS\Serializer\Serializer;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -22,11 +22,11 @@ class ProductGetController extends FOSRestController
     use RendersJson;
 
     /**
-     * @DI\Inject("repository.product", required=true)
+     * @DI\Inject("handler.product")
      *
-     * @var ProductRepository
+     * @var ProductHandler
      */
-    private $repository;
+    private $handler;
 
     /**
      * @DI\Inject("jms_serializer", required=true)
@@ -55,33 +55,22 @@ class ProductGetController extends FOSRestController
      *
      * @return Response
      */
-    public function getByUuid($uuid)
+    public function get($uuid)
     {
         try {
-            $binaryUuid = Uuid::fromString($uuid);
+            $product = $this->handler->get($uuid);
         } catch (InvalidArgumentException $exception) {
-            return $this->renderJson(
-                400,
-                [
-                    'message' => $exception->getMessage(),
-                ]
-            );
+            return $this->renderJson(400, [
+                'errors' => [$exception->getMessage()],
+            ]);
+        } catch (EntityNotFoundException $exception) {
+            return $this->renderJson(404, [
+                'errors' => [$exception->getMessage()],
+            ]);
         }
 
-        $product = $this->repository->find($binaryUuid);
-
-        if ($product === null) {
-            return $this->renderJson(
-                404,
-                ['message' => 'Product Not Found']
-            );
-        }
-
-        return $this->renderJson(
-            200,
-            [
-                'result' => $this->serializer->toArray($product),
-            ]
-        );
+        return $this->renderJson(200, [
+            'result' => $this->serializer->toArray($product),
+        ]);
     }
 }
