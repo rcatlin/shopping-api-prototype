@@ -31,7 +31,8 @@
         "doctrine/doctrine-migrations-bundle": "^1.2",
         "ramsey/uuid-doctrine": "^1.2",
         "friendsofsymfony/rest-bundle": "@dev",
-        "jms/serializer-bundle": "@dev"
+        "jms/serializer-bundle": "@dev",
+        "nelmio/api-doc-bundle": "^2.13"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",
