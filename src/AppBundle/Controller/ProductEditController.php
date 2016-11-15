@@ -3,15 +3,18 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Product;
+use AppBundle\Handler\ProductHandler;
 use AppBundle\RendersJson;
 use AppBundle\Repository\ProductRepository;
+use Doctrine\ORM\EntityNotFoundException;
+use Exception\InvalidFormException;
+use Exception\PersistenceException;
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use InvalidArgumentException;
 use JMS\DiExtraBundle\Annotation as DI;
 use JMS\Serializer\Serializer;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,11 +27,11 @@ class ProductEditController extends FOSRestController
     use RendersJson;
 
     /**
-     * @DI\Inject("repository.product")
+     * @DI\Inject("handler.product")
      *
-     * @var ProductRepository
+     * @var ProductHandler
      */
-    private $repository;
+    private $handler;
 
     /**
      * @DI\Inject("jms_serializer")
@@ -62,57 +65,27 @@ class ProductEditController extends FOSRestController
     public function edit(Request $request, $uuid)
     {
         try {
-            $binaryUuid = Uuid::fromString($uuid);
+            $product = $this->handler->put($uuid, json_decode($request->getContent(), true));
+        } catch (EntityNotFoundException $exception) {
+            return $this->renderJson(404, [
+                'errors' => [$exception->getMessage()],
+            ]);
         } catch (InvalidArgumentException $exception) {
-            return $this->renderJson(
-                400,
-                [
-                    'message' => $exception->getMessage(),
-                ]
-            );
-        }
-
-        $product = $this->repository->find($binaryUuid);
-
-        $form = $this
-            ->createForm('AppBundle\Form\ProductType', $product)
-            ->submit(
-                json_decode($request->getContent(), true)
-            );
-
-        if (!$form->isValid()) {
-            $errors = [];
-            foreach ($form->getErrors(true) as $error) {
-                $errors[] = $error->getMessage();
-            }
-
             return $this->renderJson(400, [
-                'errors' => $errors,
+                'errors' => [$exception->getMessage()],
+            ]);
+        } catch (InvalidFormException $exception) {
+            return $this->renderJson(400, [
+                'errors' => $exception->getErrors(),
+            ]);
+        } catch (PersistenceException $exception) {
+            return $this->renderJson(500, [
+                'errors' => $exception->getMessage(),
             ]);
         }
 
-        /** @var Product $product */
-        $product = $form->getData();
-        $manager = $this->getDoctrine()->getManager();
-
-        try {
-            $manager->flush();
-        } catch (\Exception $exception) {
-            return $this->renderJson(
-                500,
-                [
-                    'errors' => [
-                        $exception->getMessage(),
-                    ]
-                ]
-            );
-        }
-
-        return $this->renderJson(
-            201,
-            [
-                'result' => $this->serializer->toArray($product),
-            ]
-        );
+        return $this->renderJson(201, [
+            'result' => $this->serializer->toArray($product),
+        ]);
     }
 }

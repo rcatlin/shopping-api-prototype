@@ -88,15 +88,6 @@ class ProductHandler
     {
         $form = $this->processForm($parameters, 'POST');
 
-        if (!$form->isValid()) {
-            $errors = [];
-            foreach ($form->getErrors(true) as $error) {
-                $errors[] = $error->getMessage();
-            }
-
-            throw new InvalidFormException($errors);
-        }
-
         $product = $form->getData();
 
         try {
@@ -109,11 +100,57 @@ class ProductHandler
         return $product;
     }
 
+    /**
+     * @param $uuid
+     * @param array $parameters
+     *
+     * @return mixed
+     *
+     * @throws EntityNotFoundException
+     * @throws InvalidArgumentException
+     * @throws InvalidFormException
+     * @throws PersistenceException
+     */
+    public function put($uuid, array $parameters)
+    {
+        $form = $this->processForm($parameters, 'PUT', $this->get($uuid));
+
+        $product = $form->getData();
+
+        try {
+            $this->objectManager->flush();
+        } catch (\Exception $exception) {
+            throw new PersistenceException();
+        }
+
+        return $product;
+    }
+
+    /**
+     * @param array $parameters
+     * @param string $method
+     * @param Product|null $product
+     *
+     * @return \Symfony\Component\Form\FormInterface
+     *
+     * @throws InvalidFormException
+     */
     private function processForm(array $parameters, $method, $product = null)
     {
-        return $this
+        $form = $this
             ->formFactory
             ->create('AppBundle\Form\ProductType', $product)
             ->submit($parameters, ($method === 'PUT'));
+
+        if ($form->isValid()) {
+            return $form;
+        }
+
+        $errors = [];
+        foreach ($form->getErrors(true) as $error) {
+            $errors[] = $error->getMessage();
+        }
+
+        throw new InvalidFormException($errors);
     }
 }

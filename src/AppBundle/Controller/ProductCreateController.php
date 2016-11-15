@@ -68,10 +68,6 @@ class ProductCreateController extends FOSRestController
             return $this->renderJson(404, [
                 'errors' => [$exception->getMessage()],
             ]);
-        } catch (InvalidArgumentException $exception) {
-            return $this->renderJson(400, [
-                'errors' => [$exception->getMessage()],
-            ]);
         } catch (InvalidFormException $exception) {
             return $this->renderJson(400, [
                 'errors' => $exception->getErrors(),
