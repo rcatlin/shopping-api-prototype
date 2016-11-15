@@ -8,3 +8,8 @@ services:
         class: AppBundle\Repository\ProductRepository
         factory: ["@doctrine", "getRepository"]
         arguments: ["AppBundle\\Entity\\Product"]
+
+    repository.retailer:
+            class: AppBundle\Repository\RetailerRepository
+            factory: ["@doctrine", "getRepository"]
+            arguments: ["AppBundle\\Entity\\Retailer"]
