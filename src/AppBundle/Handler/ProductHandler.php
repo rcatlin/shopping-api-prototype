@@ -51,6 +51,18 @@ class ProductHandler
         $this->repository = $repository;
     }
 
+    public function delete($uuid)
+    {
+        $product = $this->get($uuid);
+
+        try {
+            $this->objectManager->remove($product);
+            $this->objectManager->flush();
+        } catch (\Exception $exception) {
+            throw new PersistenceException();
+        }
+    }
+
     /**
      * @param string $uuid
      *
