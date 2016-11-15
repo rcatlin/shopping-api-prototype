@@ -64,10 +64,6 @@ class ProductCreateController extends FOSRestController
     {
         try {
             $product = $this->handler->post(json_decode($request->getContent(), true));
-        } catch (EntityNotFoundException $exception) {
-            return $this->renderJson(404, [
-                'errors' => [$exception->getMessage()],
-            ]);
         } catch (InvalidFormException $exception) {
             return $this->renderJson(400, [
                 'errors' => $exception->getErrors(),

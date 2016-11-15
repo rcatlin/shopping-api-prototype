@@ -87,8 +87,6 @@ class ProductHandler
      *
      * @return Product
      *
-     * @throws EntityNotFoundException
-     * @throws InvalidArgumentException
      * @throws InvalidFormException
      * @throws PersistenceException
      */

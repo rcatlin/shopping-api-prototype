@@ -49,7 +49,8 @@ class ProductEditController extends FOSRestController
      *     input="AppBundle\Form\ProductType",
      *     statusCodes={
      *         201="Product was successfully modified and changes were persisted",
-     *         400="Invalid Product Data",
+     *         400="Invalid Product Data or Bad UUID",
+     *         404="Product with given UUID not found.",
      *         500="Server encountered an error saving the Product changes"
      *     }
      * )
