@@ -4,9 +4,7 @@ namespace AppBundle\Handler;
 
 use AppBundle\Entity\Product;
 use AppBundle\Repository\ProductRepository;
-use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\Common\Persistence\ObjectManager;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityNotFoundException;
 use Exception\InvalidFormException;
 use Exception\PersistenceException;
@@ -72,6 +70,16 @@ class ProductHandler
         }
 
         return $product;
+    }
+
+    /**
+     * @param integer $offset
+     * @param integer $limit
+     * @return array
+     */
+    public function getList($offset, $limit)
+    {
+        return $this->repository->findBy([], null, (int) $limit, (int) $offset);
     }
 
     /**

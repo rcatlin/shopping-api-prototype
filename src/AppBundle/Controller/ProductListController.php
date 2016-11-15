@@ -2,8 +2,8 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Handler\ProductHandler;
 use AppBundle\RendersJson;
-use AppBundle\Repository\ProductRepository;
 use FOS\RestBundle\Controller\Annotations\Route;
 use JMS\DiExtraBundle\Annotation as DI;
 use JMS\Serializer\Serializer;
@@ -23,11 +23,11 @@ class ProductListController
     const OFFSET = 0;
 
     /**
-     * @DI\Inject("repository.product")
+     * @DI\Inject("handler.product")
      *
-     * @var ProductRepository
+     * @var ProductHandler
      */
-    private $repository;
+    private $handler;
 
     /**
      * @DI\Inject("jms_serializer")
@@ -58,18 +58,17 @@ class ProductListController
      */
     public function getList(Request $request)
     {
-        $limit = (int) $request->query->get('limit', self::LIMIT);
-        $offset = (int) $request->query->get('offset', self::OFFSET);
+        $list = $this->handler->getList(
+            (int) $request->query->get('offset', self::OFFSET),
+            (int) $request->query->get('limit', self::LIMIT)
+        );
 
-        $serialized = [];
-        foreach ($this->repository->findBy([], null, $limit, $offset) as $product) {
-            $serialized[] = $this->serializer->toArray($product);
-        }
-
-        if (empty($serialized)) {
+        if (empty($list)) {
             return $this->renderJson(204);
         }
 
-        return $this->renderJson(200, $serialized);
+        return $this->renderJson(200, [
+            'result' => array_map([$this->serializer, 'toArray'], $list),
+        ]);
     }
 }
