@@ -4,10 +4,16 @@ namespace AppBundle\Handler;
 
 use AppBundle\Entity\Product;
 use AppBundle\Repository\ProductRepository;
+use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityNotFoundException;
+use Exception\InvalidFormException;
+use Exception\PersistenceException;
 use InvalidArgumentException;
 use JMS\DiExtraBundle\Annotation as DI;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\Form\FormFactory;
 
 /**
  * @DI\Service("handler.product")
@@ -15,19 +21,35 @@ use Ramsey\Uuid\Uuid;
 class ProductHandler
 {
     /**
+     * @var FormFactory
+     */
+    private $formFactory;
+
+    /**
+     * @var ObjectManager
+     */
+    private $objectManager;
+
+    /**
      * @var ProductRepository
      */
     private $repository;
 
     /**
      * @DI\InjectParams({
+     *     "formFactory"=@DI\Inject("form.factory"),
+     *     "objectManager"=@DI\Inject("doctrine.orm.default_entity_manager"),
      *     "repository"=@DI\Inject("repository.product")
      * })
      *
+     * @param FormFactory $formFactory
+     * @param ObjectManager $objectManager
      * @param ProductRepository $repository
      */
-    public function __construct(ProductRepository $repository)
+    public function __construct(FormFactory $formFactory, ObjectManager $objectManager, ProductRepository $repository)
     {
+        $this->formFactory = $formFactory;
+        $this->objectManager = $objectManager;
         $this->repository = $repository;
     }
 
@@ -50,5 +72,48 @@ class ProductHandler
         }
 
         return $product;
+    }
+
+    /**
+     * @param array $parameters
+     *
+     * @return Product
+     *
+     * @throws EntityNotFoundException
+     * @throws InvalidArgumentException
+     * @throws InvalidFormException
+     * @throws PersistenceException
+     */
+    public function post(array $parameters)
+    {
+        $form = $this->processForm($parameters, 'POST');
+
+        if (!$form->isValid()) {
+            $errors = [];
+            foreach ($form->getErrors(true) as $error) {
+                $errors[] = $error->getMessage();
+            }
+
+            throw new InvalidFormException($errors);
+        }
+
+        $product = $form->getData();
+
+        try {
+            $this->objectManager->persist($product);
+            $this->objectManager->flush();
+        } catch (\Exception $exception) {
+            throw new PersistenceException();
+        }
+
+        return $product;
+    }
+
+    private function processForm(array $parameters, $method, $product = null)
+    {
+        return $this
+            ->formFactory
+            ->create('AppBundle\Form\ProductType', $product)
+            ->submit($parameters, ($method === 'PUT'));
     }
 }

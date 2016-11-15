@@ -16,10 +16,11 @@ class ProductType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('name', TextType::class, [
-            'required' => true,
-            ])
-            ->add('price', IntegerType::class, [
+            ->create('name', TextType::class, [
+                'required' => true,
+            ]);
+        $builder
+            ->create('price', IntegerType::class, [
                 'required' => false,
             ]);
     }
@@ -41,6 +42,4 @@ class ProductType extends AbstractType
     {
         return '';
     }
-
-
 }
