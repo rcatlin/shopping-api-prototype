@@ -1,7 +1,7 @@
 .PHONY: tests start stop diffdump migrate
 
 
-tests:
+tests: test_db test_migrate
 	./vendor/bin/phpunit --configuration phpunit.xml
 
 start:
