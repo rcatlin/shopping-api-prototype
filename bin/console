@@ -24,7 +24,6 @@ if ($debug) {
 
 $kernel = new AppKernel($env, $debug);
 $kernel->boot();
-$kernel->registerDoctrineTypes();
 
 $application = new Application($kernel);
 $application->run($input);

@@ -25,7 +25,6 @@ Debug::enable();
 $kernel = new AppKernel('dev', true);
 $kernel->boot();
 $kernel->loadClassCache();
-$kernel->registerDoctrineTypes();
 
 $request = Request::createFromGlobals();
 $response = $kernel->handle($request);

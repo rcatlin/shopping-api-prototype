@@ -6,6 +6,26 @@ use Symfony\Component\Config\Loader\LoaderInterface;
 
 class AppKernel extends Kernel
 {
+    /**
+     * @var bool
+     */
+    protected $hasExecutedOneTimePostBoot = false;
+
+    public function boot()
+    {
+        parent::boot();
+
+        if (!$this->hasExecutedOneTimePostBoot) {
+            $this->hasExecutedOneTimePostBoot = true;
+            $this->oneTimePostBoot();
+        }
+    }
+
+    private function oneTimePostBoot()
+    {
+        $this->registerDoctrineTypes();
+    }
+
     public function registerBundles()
     {
         $bundles = [
