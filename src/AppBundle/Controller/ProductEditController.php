@@ -65,6 +65,14 @@ class ProductEditController extends FOSRestController
      */
     public function edit(Request $request, $uuid)
     {
+        $json = json_decode($request->getContent(), true);
+
+        if (!is_array($json)) {
+            return $this->renderJson(400, [
+                'errors' => ['Malformed JSON']
+            ]);
+        }
+
         try {
             $product = $this->handler->put($uuid, json_decode($request->getContent(), true));
         } catch (EntityNotFoundException $exception) {
