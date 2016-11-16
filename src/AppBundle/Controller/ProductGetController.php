@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Product;
 use AppBundle\Handler\ProductHandler;
 use AppBundle\RendersJson;
 use Doctrine\ORM\EntityNotFoundException;
@@ -12,6 +13,7 @@ use JMS\DiExtraBundle\Annotation as DI;
 use JMS\Serializer\Serializer;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -51,24 +53,20 @@ class ProductGetController extends FOSRestController
      * @Route("/{uuid}", name="api_get_product")
      * @Method({"GET"})
      *
-     * @param string $uuid
+     * @ParamConverter(
+     *     "product",
+     *     class="AppBundle:Product",
+     *     options={
+     *         "mapping": {"uuid": "id"}
+     *     }
+     * )
+     *
+     * @param Product $product
      *
      * @return Response
      */
-    public function get($uuid)
+    public function getProduct(Product $product)
     {
-        try {
-            $product = $this->handler->get($uuid);
-        } catch (InvalidArgumentException $exception) {
-            return $this->renderJson(400, [
-                'errors' => [$exception->getMessage()],
-            ]);
-        } catch (EntityNotFoundException $exception) {
-            return $this->renderJson(404, [
-                'errors' => [$exception->getMessage()],
-            ]);
-        }
-
         return $this->renderJson(200, [
             'result' => $this->serializer->toArray($product),
         ]);
