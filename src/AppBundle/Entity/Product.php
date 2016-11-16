@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -73,6 +74,30 @@ class Product
      */
     private $price;
 
+    /**
+     * @var Retailer
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Retailer")
+     *
+     * @Serializer\Expose()
+     * @Serializer\SerializedName("retailer")
+     * @Serializer\Accessor(
+     *     getter="getRetailer",
+     *     setter="setRetailer"
+     * )
+     */
+    private $retailer;
+
+    public function __toString()
+    {
+        $retailer = $this->getRetailer();
+
+        if ($retailer === null) {
+            return $this->getName();
+        }
+
+        return $retailer->getName() . ' - ' . $this->getName();
+    }
 
     /**
      * Get id
@@ -122,6 +147,32 @@ class Product
     public function setPrice($price)
     {
         $this->price = $price;
+    }
+
+    /**
+     * @return Retailer
+     */
+    public function getRetailer()
+    {
+        return $this->retailer;
+    }
+
+    /**
+     * @param Retailer $retailer
+     */
+    public function setRetailer(Retailer $retailer = null)
+    {
+        if ($retailer !== null) {
+            $this->retailer = $retailer;
+
+            return;
+        }
+
+        if ($this->retailer === null) {
+            return;
+        }
+
+        $retailer->removeProduct($this);
     }
 }
 

@@ -2,6 +2,8 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Annotations\Annotation\Required;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -59,13 +61,20 @@ class Retailer
     private $name;
 
     /**
+     * @var ArrayCollection
+     *
+     * @ORM\OneToMany(
+     *     targetEntity="AppBundle\Entity\Product",
+     *     mappedBy="retailer",
+     *     cascade={"persist"}
+     * )
+     */
+    private $products;
+
+    /**
      * @var string
      *
      * @Assert\NotBlank(message="Url should not be blank.")
-     * @Assert\Type(
-     *     type="url",
-     *     message="Url must be a valid url."
-     * )
      *
      * @ORM\Column(
      *     name="url",
@@ -78,11 +87,15 @@ class Retailer
      *     getter="getUrl",
      *     setter="setUrl"
      * )
-     * @Serializer\SerializedName("name")
+     * @Serializer\SerializedName("url")
      * @Serializer\Type("string")
      */
     private $url;
 
+    public function __toString()
+    {
+        return $this->getName();
+    }
 
     /**
      * Get id
@@ -116,6 +129,41 @@ class Retailer
     public function getName()
     {
         return $this->name;
+    }
+
+    public function addProduct(Product $product)
+    {
+        $product->setRetailer($this);
+
+        $this->products->add($product);
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getProducts()
+    {
+        return $this->products;
+    }
+
+    public function removeProduct(Product $product)
+    {
+        $product->setRetailer(null);
+
+        $this->products->removeElement($product);
+    }
+
+    /**
+     * @param ArrayCollection $products
+     */
+    public function setProducts(ArrayCollection $products)
+    {
+        $products->forAll(function ($product) {
+            /** @var Product $product */
+            $product->setRetailer($this);
+        });
+
+        $this->products = $products;
     }
 
     /**
