@@ -17,7 +17,7 @@ class RetailerType extends AbstractType
     {
         $builder
             ->add('name', TextType::class, ['required' => true])
-            ->add('url', UrlType::class);
+            ->add('url', UrlType::class, ['required' => true]);
     }
     
     /**
