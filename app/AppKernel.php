@@ -6,26 +6,6 @@ use Symfony\Component\Config\Loader\LoaderInterface;
 
 class AppKernel extends Kernel
 {
-    /**
-     * @var bool
-     */
-    protected $hasExecutedOneTimePostBoot = false;
-
-    public function boot()
-    {
-        parent::boot();
-
-        if (!$this->hasExecutedOneTimePostBoot) {
-            $this->hasExecutedOneTimePostBoot = true;
-            $this->oneTimePostBoot();
-        }
-    }
-
-    private function oneTimePostBoot()
-    {
-        $this->registerDoctrineTypes();
-    }
-
     public function registerBundles()
     {
         $bundles = [
@@ -72,20 +52,5 @@ class AppKernel extends Kernel
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
         $loader->load($this->getRootDir().'/config/config_'.$this->getEnvironment().'.yml');
-    }
-
-    public function registerDoctrineTypes()
-    {
-        \Doctrine\DBAL\Types\Type::addType('uuid_binary', 'Ramsey\Uuid\Doctrine\UuidBinaryType');
-
-        /** @var EntityManager $entityManager */
-        $entityManager = $this
-            ->getContainer()
-            ->get('doctrine.orm.default_entity_manager');
-
-        $entityManager
-            ->getConnection()
-            ->getDatabasePlatform()
-            ->registerDoctrineTypeMapping('uuid_binary', 'binary');
     }
 }
