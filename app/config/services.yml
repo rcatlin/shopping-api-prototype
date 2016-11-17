@@ -18,8 +18,7 @@ services:
     jms_serializer.object_constructor:
         alias: jms_serializer.doctrine_object_constructor
 
-    jms_serializer.product_deserialization_subscriber:
-        class: AppBundle\Serializer\Subscriber\ProductPreDeserializationSubscriber
-        arguments: ['@logger']
+    jms_serializer.app_bundle.deserialization_subscriber:
+        class: AppBundle\Serializer\Subscriber\PreDeserializationSubscriber
         tags:
           - { name: jms_serializer.event_subscriber}

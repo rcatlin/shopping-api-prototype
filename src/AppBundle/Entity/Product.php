@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @Serializer\ExclusionPolicy("all")
  */
-class Product
+class Product implements IdentifiableInterface
 {
     /**
      * @var Uuid
