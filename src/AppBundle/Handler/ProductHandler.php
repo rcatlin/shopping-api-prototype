@@ -10,6 +10,7 @@ use Exception\InvalidFormException;
 use Exception\PersistenceException;
 use InvalidArgumentException;
 use JMS\DiExtraBundle\Annotation as DI;
+use JMS\Serializer\Serializer;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Form\FormFactory;
 
@@ -34,21 +35,33 @@ class ProductHandler
     private $repository;
 
     /**
+     * @var Serializer
+     */
+    private $serializer;
+
+    /**
      * @DI\InjectParams({
      *     "formFactory"=@DI\Inject("form.factory"),
      *     "objectManager"=@DI\Inject("doctrine.orm.default_entity_manager"),
-     *     "repository"=@DI\Inject("repository.product")
+     *     "repository"=@DI\Inject("repository.product"),
+     *     "serializer"=@DI\Inject("jms_serializer")
      * })
      *
      * @param FormFactory $formFactory
      * @param ObjectManager $objectManager
      * @param ProductRepository $repository
+     * @param Serializer $serializer
      */
-    public function __construct(FormFactory $formFactory, ObjectManager $objectManager, ProductRepository $repository)
-    {
+    public function __construct(
+        FormFactory $formFactory,
+        ObjectManager $objectManager,
+        ProductRepository $repository,
+        Serializer $serializer
+    ) {
         $this->formFactory = $formFactory;
         $this->objectManager = $objectManager;
         $this->repository = $repository;
+        $this->serializer = $serializer;
     }
 
     public function delete(Product $product)
@@ -93,23 +106,22 @@ class ProductHandler
     }
 
     /**
-     * @param array $parameters
+     * @param string $data
      *
      * @return Product
      *
      * @throws InvalidFormException
      * @throws PersistenceException
      */
-    public function post(array $parameters)
+    public function post($data)
     {
-        $form = $this->processForm($parameters, 'POST');
-
-        $product = $form->getData();
+        $product = $this->serializer->deserialize($data, 'AppBundle\Entity\Product', 'json');
 
         try {
             $this->objectManager->persist($product);
             $this->objectManager->flush();
         } catch (\Exception $exception) {
+            var_dump($exception->getMessage());
             throw new PersistenceException();
         }
 

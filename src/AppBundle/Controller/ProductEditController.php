@@ -69,7 +69,6 @@ class ProductEditController extends FOSRestController
      *
      * @param Request $request
      * @param Product $product
-     *
      * @return Response
      */
     public function edit(Request $request, Product $product)
