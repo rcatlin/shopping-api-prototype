@@ -2,9 +2,9 @@
 
 namespace Tests\AppBundle\Controller;
 
-use Tests\Functional\AppBundle\Controller\AbstractControllerTestCase;
+use Tests\Functional\WebTestCase;
 
-class DefaultControllerTest extends AbstractControllerTestCase
+class DefaultControllerTest extends WebTestCase
 {
     public function testIndex()
     {

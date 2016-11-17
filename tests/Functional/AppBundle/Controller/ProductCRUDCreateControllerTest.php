@@ -2,7 +2,7 @@
 
 namespace AppBundle\Tests\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Tests\Functional\WebTestCase;
 
 class ProductCRUDCreateControllerTest extends WebTestCase
 {
