@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Product;
 use AppBundle\Handler\ProductHandler;
 use AppBundle\RendersJson;
 use Doctrine\ORM\EntityNotFoundException;
@@ -10,6 +11,7 @@ use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use JMS\DiExtraBundle\Annotation as DI;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -30,14 +32,22 @@ class ProductDeleteController extends FOSRestController
      * @Method({"DELETE"})
      * @Route(path="/{uuid}", name="api_product_delete")
      *
-     * @param string $uuid
+     * @ParamConverter(
+     *     "product",
+     *     class="AppBundle:Product",
+     *     options={
+     *         "mapping": {"uuid": "id"}
+     *     }
+     * )
+     *
+     * @param Product $product
      *
      * @return Response
      */
-    public function delete($uuid)
+    public function delete(Product $product)
     {
         try {
-            $this->handler->delete($uuid);
+            $this->handler->delete($product);
         } catch (EntityNotFoundException $exception) {
             return $this->renderJson(404, [
                 'errors' => [$exception->getMessage()],

@@ -16,6 +16,7 @@ use JMS\DiExtraBundle\Annotation as DI;
 use JMS\Serializer\Serializer;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -58,23 +59,23 @@ class ProductEditController extends FOSRestController
      * @Method({"PUT"})
      * @Route(path="/{uuid}", name="api_product_edit")
      *
+     * @ParamConverter(
+     *     "product",
+     *     class="AppBundle:Product",
+     *     options={
+     *         "mapping": {"uuid": "id"}
+     *     }
+     * )
+     *
      * @param Request $request
-     * @param string $uuid
+     * @param Product $product
      *
      * @return Response
      */
-    public function edit(Request $request, $uuid)
+    public function edit(Request $request, Product $product)
     {
-        $json = json_decode($request->getContent(), true);
-
-        if (!is_array($json)) {
-            return $this->renderJson(400, [
-                'errors' => ['Malformed JSON']
-            ]);
-        }
-
         try {
-            $product = $this->handler->put($uuid, json_decode($request->getContent(), true));
+            $product = $this->handler->put($product, json_decode($request->getContent(), true));
         } catch (EntityNotFoundException $exception) {
             return $this->renderJson(404, [
                 'errors' => [$exception->getMessage()],

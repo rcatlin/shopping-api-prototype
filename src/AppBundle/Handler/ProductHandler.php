@@ -51,10 +51,8 @@ class ProductHandler
         $this->repository = $repository;
     }
 
-    public function delete($uuid)
+    public function delete(Product $product)
     {
-        $product = $this->get($uuid);
-
         try {
             $this->objectManager->remove($product);
             $this->objectManager->flush();
@@ -119,21 +117,19 @@ class ProductHandler
     }
 
     /**
-     * @param $uuid
+     * @param Product $product
      * @param array $parameters
      *
-     * @return mixed
+     * @return Product
      *
      * @throws EntityNotFoundException
      * @throws InvalidArgumentException
      * @throws InvalidFormException
      * @throws PersistenceException
      */
-    public function put($uuid, array $parameters)
+    public function put(Product $product, array $parameters)
     {
-        $form = $this->processForm($parameters, 'PUT', $this->get($uuid));
-
-        $product = $form->getData();
+        $this->processForm($parameters, 'PUT', $product);
 
         try {
             $this->objectManager->flush();
