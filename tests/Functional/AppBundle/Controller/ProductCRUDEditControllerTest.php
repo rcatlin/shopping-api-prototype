@@ -20,9 +20,12 @@ class ProductCRUDEditControllerTest extends WebTestCase
 
         $productUrl = '/api/products/' . $productId;
 
+        $newName = 'Bar';
+        $newPrice = 6666;
+
         $client->request('PUT', $productUrl, [], [], [], json_encode([
-            'name' => 'Bar',
-            'price' => 6666
+            'name' => $newName,
+            'price' => $newPrice
         ]));
         $response = $client->getResponse();
 ;
@@ -36,22 +39,23 @@ class ProductCRUDEditControllerTest extends WebTestCase
         $this->assertArrayHasKey('price', $content['result']);
 
         $this->assertSame($productId, $content['result']['id']);
-        $this->assertSame('Bar', $content['result']['name']);
-        $this->assertSame(6666, $content['result']['price']);
+        $this->assertSame($newName, $content['result']['name']);
+        $this->assertSame($newPrice, $content['result']['price']);
     }
 
     public function testEditWithNewRetailer()
     {
         $client = self::createClient();
 
-        $product = (new ProductFixture('Foo', 5555))->load($this->getEntityManager());
-
-        $productId = $product->getId()->toString();
-        $productUrl = '/api/products/' . $productId;
         $name = 'Foo';
         $price = 7890;
         $retailerName = 'Bar';
         $retailerUrl = 'http://www.bar.com/';
+
+        $product = (new ProductFixture($name, $price))->load($this->getEntityManager());
+
+        $productId = $product->getId()->toString();
+        $productUrl = '/api/products/' . $productId;
 
         $client->request('PUT', $productUrl, [], [], [], json_encode([
             'name' => $name,
