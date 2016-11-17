@@ -10,6 +10,16 @@ services:
         arguments: ["AppBundle\\Entity\\Product"]
 
     repository.retailer:
-            class: AppBundle\Repository\RetailerRepository
-            factory: ["@doctrine", "getRepository"]
-            arguments: ["AppBundle\\Entity\\Retailer"]
+        class: AppBundle\Repository\RetailerRepository
+        factory: ["@doctrine", "getRepository"]
+        arguments: ["AppBundle\\Entity\\Retailer"]
+
+    # Properly handles deserialization of existing Doctrine Objects (PUT request)
+    jms_serializer.object_constructor:
+        alias: jms_serializer.doctrine_object_constructor
+
+    jms_serializer.product_deserialization_subscriber:
+        class: AppBundle\Serializer\Subscriber\ProductPreDeserializationSubscriber
+        arguments: ['@logger']
+        tags:
+          - { name: jms_serializer.event_subscriber}

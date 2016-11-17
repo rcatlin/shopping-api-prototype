@@ -74,7 +74,7 @@ class ProductEditController extends FOSRestController
     public function edit(Request $request, Product $product)
     {
         try {
-            $product = $this->handler->put($product, json_decode($request->getContent(), true));
+            $product = $this->handler->put($product, $request->getContent());
         } catch (EntityNotFoundException $exception) {
             return $this->renderJson(404, [
                 'errors' => [$exception->getMessage()],

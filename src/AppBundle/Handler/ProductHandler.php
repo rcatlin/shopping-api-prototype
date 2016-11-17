@@ -10,6 +10,7 @@ use Exception\InvalidFormException;
 use Exception\PersistenceException;
 use InvalidArgumentException;
 use JMS\DiExtraBundle\Annotation as DI;
+use JMS\Serializer\DeserializationContext;
 use JMS\Serializer\Serializer;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Form\FormFactory;
@@ -38,6 +39,11 @@ class ProductHandler
      * @var Serializer
      */
     private $serializer;
+
+    /**
+     * @var \FOS\RestBundle\Serializer\Serializer
+     */
+    private $objectSerializer;
 
     /**
      * @DI\InjectParams({
@@ -130,7 +136,7 @@ class ProductHandler
 
     /**
      * @param Product $product
-     * @param array $parameters
+     * @param string $data
      *
      * @return Product
      *
@@ -139,9 +145,14 @@ class ProductHandler
      * @throws InvalidFormException
      * @throws PersistenceException
      */
-    public function put(Product $product, array $parameters)
+    public function put(Product $product, $data)
     {
-        $this->processForm($parameters, 'PUT', $product);
+        $this->serializer->deserialize(
+            $data,
+            'AppBundle\Entity\Product',
+            'json',
+            (new DeserializationContext())->setAttribute('target', $product)
+        );
 
         try {
             $this->objectManager->flush();
@@ -150,33 +161,5 @@ class ProductHandler
         }
 
         return $product;
-    }
-
-    /**
-     * @param array $parameters
-     * @param string $method
-     * @param Product|null $product
-     *
-     * @return \Symfony\Component\Form\FormInterface
-     *
-     * @throws InvalidFormException
-     */
-    private function processForm(array $parameters, $method, $product = null)
-    {
-        $form = $this
-            ->formFactory
-            ->create('AppBundle\Form\ProductType', $product)
-            ->submit($parameters, ($method === 'PUT'));
-
-        if ($form->isValid()) {
-            return $form;
-        }
-
-        $errors = [];
-        foreach ($form->getErrors(true) as $error) {
-            $errors[] = $error->getMessage();
-        }
-
-        throw new InvalidFormException($errors);
     }
 }
