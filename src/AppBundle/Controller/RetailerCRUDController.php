@@ -10,7 +10,6 @@ use Exception\InvalidFormException;
 use Exception\PersistenceException;
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
-use InvalidArgumentException;
 use JMS\DiExtraBundle\Annotation as DI;
 use JMS\Serializer\Serializer;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
@@ -65,7 +64,7 @@ class RetailerCRUDController extends FOSRestController
     public function create(Request $request)
     {
         try {
-            $retailer = $this->handler->post(json_decode($request->getContent(), true));
+            $retailer = $this->handler->post($request->getContent());
         } catch (InvalidFormException $exception) {
             return $this->renderJson(400, [
                 'errors' => $exception->getErrors(),
@@ -139,27 +138,23 @@ class RetailerCRUDController extends FOSRestController
      * @Method({"PUT"})
      * @Route(path="/{uuid}", name="api_retailer_edit")
      *
+     * @ParamConverter(
+     *     "retailer",
+     *     class="AppBundle:Retailer",
+     *     options={
+     *         "mapping": {"uuid": "id"}
+     *     }
+     * )
+     *
      * @param Request $request
-     * @param string $uuid
+     * @param Retailer $retailer
      *
      * @return Response
      */
-    public function edit(Request $request, $uuid)
+    public function edit(Request $request, Retailer $retailer)
     {
         try {
-            $retailer = $this->handler->put($uuid, json_decode($request->getContent(), true));
-        } catch (EntityNotFoundException $exception) {
-            return $this->renderJson(404, [
-                'errors' => [$exception->getMessage()],
-            ]);
-        } catch (InvalidArgumentException $exception) {
-            return $this->renderJson(400, [
-                'errors' => [$exception->getMessage()],
-            ]);
-        } catch (InvalidFormException $exception) {
-            return $this->renderJson(400, [
-                'errors' => $exception->getErrors(),
-            ]);
+            $retailer = $this->handler->put($retailer, $request->getContent());
         } catch (PersistenceException $exception) {
             return $this->renderJson(500, [
                 'errors' => $exception->getMessage(),
@@ -221,24 +216,20 @@ class RetailerCRUDController extends FOSRestController
      * @Route("/{uuid}", name="api_get_retailer")
      * @Method({"GET"})
      *
-     * @param string $uuid
+     * @ParamConverter(
+     *     "retailer",
+     *     class="AppBundle\Entity\Retailer",
+     *     options={
+     *         "mapping": {"uuid": "id"}
+     *     }
+     * )
+     *
+     * @param Retailer $retailer
      *
      * @return Response
      */
-    public function getRetailer($uuid)
+    public function getRetailer(Retailer $retailer)
     {
-        try {
-            $retailer = $this->handler->get($uuid);
-        } catch (InvalidArgumentException $exception) {
-            return $this->renderJson(400, [
-                'errors' => [$exception->getMessage()],
-            ]);
-        } catch (EntityNotFoundException $exception) {
-            return $this->renderJson(404, [
-                'errors' => [$exception->getMessage()],
-            ]);
-        }
-
         return $this->renderJson(200, [
             'result' => $this->serializer->toArray($retailer),
         ]);

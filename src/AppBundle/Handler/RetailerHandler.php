@@ -6,12 +6,12 @@ use AppBundle\Entity\Retailer;
 use AppBundle\Repository\RetailerRepository;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityNotFoundException;
-use Exception\InvalidFormException;
 use Exception\PersistenceException;
 use InvalidArgumentException;
 use JMS\DiExtraBundle\Annotation as DI;
+use JMS\Serializer\DeserializationContext;
+use JMS\Serializer\Serializer;
 use Ramsey\Uuid\Uuid;
-use Symfony\Component\Form\FormFactory;
 
 /**
  * @DI\Service("handler.retailer")
@@ -29,21 +29,29 @@ class RetailerHandler
     private $repository;
 
     /**
+     * @var Serializer
+     */
+    private $serializer;
+
+    /**
      * @DI\InjectParams({
-     *     "formFactory"=@DI\Inject("form.factory"),
      *     "objectManager"=@DI\Inject("doctrine.orm.default_entity_manager"),
-     *     "repository"=@DI\Inject("repository.retailer")
+     *     "repository"=@DI\Inject("repository.retailer"),
+     *     "serializer"=@DI\Inject("jms_serializer")
      * })
      *
-     * @param FormFactory $formFactory
      * @param ObjectManager $objectManager
      * @param RetailerRepository $repository
+     * @param Serializer $serializer
      */
-    public function __construct(FormFactory $formFactory, ObjectManager $objectManager, RetailerRepository $repository)
-    {
-        $this->formFactory = $formFactory;
+    public function __construct(
+        ObjectManager $objectManager,
+        RetailerRepository $repository,
+        Serializer $serializer
+    ) {
         $this->objectManager = $objectManager;
         $this->repository = $repository;
+        $this->serializer = $serializer;
     }
 
     public function delete(Retailer $retailer)
@@ -68,13 +76,13 @@ class RetailerHandler
     {
         $binaryUuid = $binaryUuid = Uuid::fromString($uuid);
 
-        $product = $this->repository->find($binaryUuid);
+        $retailer = $this->repository->find($binaryUuid);
 
-        if ($product === null) {
+        if ($retailer === null) {
             throw new EntityNotFoundException('Retailer not found with UUID: ' . $uuid);
         }
 
-        return $product;
+        return $retailer;
     }
 
     /**
@@ -88,45 +96,43 @@ class RetailerHandler
     }
 
     /**
-     * @param array $parameters
+     * @param string $data
      *
      * @return Retailer
      *
-     * @throws InvalidFormException
      * @throws PersistenceException
      */
-    public function post(array $parameters)
+    public function post($data)
     {
-        $form = $this->processForm($parameters, 'POST');
-
-        $product = $form->getData();
+        /** @var Retailer $retailer */
+        $retailer = $this->serializer->deserialize($data, 'AppBundle\Entity\Retailer', 'json');
 
         try {
-            $this->objectManager->persist($product);
+            $this->objectManager->persist($retailer);
             $this->objectManager->flush();
         } catch (\Exception $exception) {
             throw new PersistenceException();
         }
 
-        return $product;
+        return $retailer;
     }
 
     /**
-     * @param $uuid
-     * @param array $parameters
+     * @param Retailer $retailer
+     * @param string $data
      *
      * @return Retailer
      *
-     * @throws EntityNotFoundException
-     * @throws InvalidArgumentException
-     * @throws InvalidFormException
      * @throws PersistenceException
      */
-    public function put($uuid, array $parameters)
+    public function put(Retailer $retailer, $data)
     {
-        $form = $this->processForm($parameters, 'PUT', $this->get($uuid));
-
-        $product = $form->getData();
+        $retailer = $this->serializer->deserialize(
+            $data,
+            'AppBundle\Entity\Retailer',
+            'json',
+            (new DeserializationContext())->setAttribute('target', $retailer)
+        );
 
         try {
             $this->objectManager->flush();
@@ -134,34 +140,6 @@ class RetailerHandler
             throw new PersistenceException();
         }
 
-        return $product;
-    }
-
-    /**
-     * @param array $parameters
-     * @param string $method
-     * @param Retailer|null $product
-     *
-     * @return \Symfony\Component\Form\FormInterface
-     *
-     * @throws InvalidFormException
-     */
-    private function processForm(array $parameters, $method, $product = null)
-    {
-        $form = $this
-            ->formFactory
-            ->create('AppBundle\Form\RetailerType', $product)
-            ->submit($parameters, ($method === 'PUT'));
-
-        if ($form->isValid()) {
-            return $form;
-        }
-
-        $errors = [];
-        foreach ($form->getErrors(true) as $error) {
-            $errors[] = $error->getMessage();
-        }
-
-        throw new InvalidFormException($errors);
+        return $retailer;
     }
 }
