@@ -5,7 +5,7 @@ namespace Tests\Functional\AppBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Tests\Fixtures\ProductFixture;
 
-class ProductDeleteControllerTest extends WebTestCase
+class ProductCRUDDeleteControllerTest extends WebTestCase
 {
     public function testDelete()
     {

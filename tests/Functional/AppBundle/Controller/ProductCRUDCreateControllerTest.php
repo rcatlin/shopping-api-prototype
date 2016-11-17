@@ -4,7 +4,7 @@ namespace AppBundle\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class ProductCreateControllerTest extends WebTestCase
+class ProductCRUDCreateControllerTest extends WebTestCase
 {
     public function testCreate()
     {

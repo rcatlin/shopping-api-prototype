@@ -5,7 +5,7 @@ namespace Tests\Functional\AppBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Tests\Fixtures\ProductFixture;
 
-class ProductEditControllerTest extends WebTestCase
+class ProductCRUDEditControllerTest extends WebTestCase
 {
     public function testEdit()
     {
