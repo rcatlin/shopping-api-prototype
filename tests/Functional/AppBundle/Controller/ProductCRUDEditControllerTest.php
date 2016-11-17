@@ -2,19 +2,19 @@
 
 namespace Tests\Functional\AppBundle\Controller;
 
+use Tests\AssertsArrayHasKeys;
 use Tests\Fixtures\ProductFixture;
 use Tests\Functional\WebTestCase;
 
 class ProductCRUDEditControllerTest extends WebTestCase
 {
+    use AssertsArrayHasKeys;
+
     public function testEdit()
     {
         $client = self::createClient();
 
-        $container = $this->getContainer();
-        $entityManager = $container->get('doctrine.orm.default_entity_manager');
-
-        $product = (new ProductFixture('Foo', 5555))->load($entityManager);
+        $product = (new ProductFixture('Foo', 5555))->load($this->getEntityManager());
 
         $productId = $product->getId()->toString();
 
@@ -38,5 +38,44 @@ class ProductCRUDEditControllerTest extends WebTestCase
         $this->assertSame($productId, $content['result']['id']);
         $this->assertSame('Bar', $content['result']['name']);
         $this->assertSame(6666, $content['result']['price']);
+    }
+
+    public function testEditWithNewRetailer()
+    {
+        $client = self::createClient();
+
+        $product = (new ProductFixture('Foo', 5555))->load($this->getEntityManager());
+
+        $productId = $product->getId()->toString();
+        $productUrl = '/api/products/' . $productId;
+        $name = 'Foo';
+        $price = 7890;
+        $retailerName = 'Bar';
+        $retailerUrl = 'http://www.bar.com/';
+
+        $client->request('PUT', $productUrl, [], [], [], json_encode([
+            'name' => $name,
+            'price' => $price,
+            'retailer' => [
+                'name' => $retailerName,
+                'url' => $retailerUrl,
+            ]
+        ]));
+        $response = $client->getResponse();
+
+        $this->assertSame(201, $response->getStatusCode());
+
+        $content = json_decode($response->getContent(), true);
+
+        $this->assertArrayHasKey('result', $content);
+        $this->assertArrayHasKeys(['id', 'name', 'price', 'retailer'], $content['result']);
+        $this->assertArrayHasKeys(['id', 'name', 'url'], $content['result']['retailer']);
+
+        $this->assertSame($productId, $content['result']['id']);
+        $this->assertSame($name, $content['result']['name']);
+        $this->assertSame($price, $content['result']['price']);
+        $this->assertNotNull($content['result']['retailer']['id']);
+        $this->assertSame($retailerName, $content['result']['retailer']['name']);
+        $this->assertSame($retailerUrl, $content['result']['retailer']['url']);
     }
 }
