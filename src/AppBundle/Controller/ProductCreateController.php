@@ -63,7 +63,7 @@ class ProductCreateController extends FOSRestController
     public function create(Request $request)
     {
         try {
-            $product = $this->handler->post(json_decode($request->getContent(), true));
+            $product = $this->handler->post($request->getContent());
         } catch (InvalidFormException $exception) {
             return $this->renderJson(400, [
                 'errors' => $exception->getErrors(),
