@@ -45,7 +45,6 @@ class ProductCreateController extends FOSRestController
      * @ApiDoc(
      *     resource=true,
      *     description="Creates a New Product",
-     *     input="AppBundle\Form\ProductType",
      *     statusCodes={
      *         201="Product was successfully created and persisted",
      *         400="Invalid Product Data",

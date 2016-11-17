@@ -47,7 +47,6 @@ class ProductEditController extends FOSRestController
      * @ApiDoc(
      *     resource=true,
      *     description="Updates an Existing Product",
-     *     input="AppBundle\Form\ProductType",
      *     statusCodes={
      *         201="Product was successfully modified and changes were persisted",
      *         400="Invalid Product Data or Bad UUID",
