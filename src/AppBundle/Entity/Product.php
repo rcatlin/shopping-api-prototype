@@ -5,6 +5,7 @@ namespace AppBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -18,7 +19,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Product
 {
     /**
-     * @var int
+     * @var Uuid
      *
      * @ORM\Id
      * @ORM\Column(name="id", type="uuid_binary")
@@ -100,9 +101,9 @@ class Product
     }
 
     /**
-     * Get id
+     * Get Id
      *
-     * @return int
+     * @return Uuid
      */
     public function getId()
     {
