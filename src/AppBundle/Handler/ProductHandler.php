@@ -121,6 +121,7 @@ class ProductHandler
      */
     public function post($data)
     {
+        /** @var Product $product */
         $product = $this->serializer->deserialize($data, 'AppBundle\Entity\Product', 'json');
 
         try {
