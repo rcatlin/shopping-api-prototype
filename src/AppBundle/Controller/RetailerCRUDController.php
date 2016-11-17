@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Retailer;
 use AppBundle\Handler\RetailerHandler;
 use AppBundle\RendersJson;
 use Doctrine\ORM\EntityNotFoundException;
@@ -14,6 +15,7 @@ use JMS\DiExtraBundle\Annotation as DI;
 use JMS\Serializer\Serializer;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -92,14 +94,22 @@ class RetailerCRUDController extends FOSRestController
      * @Method({"DELETE"})
      * @Route(path="/{uuid}", name="api_retailer_delete")
      *
-     * @param string $uuid
+     * @ParamConverter(
+     *     "retailer",
+     *     class="AppBundle\Entity\Retailer",
+     *     options={
+     *         "mapping": {"uuid": "id"}
+     *     }
+     * )
+     *
+     * @param Retailer $retailer
      *
      * @return Response
      */
-    public function delete($uuid)
+    public function delete(Retailer $retailer)
     {
         try {
-            $this->handler->delete($uuid);
+            $this->handler->delete($retailer);
         } catch (EntityNotFoundException $exception) {
             return $this->renderJson(404, [
                 'errors' => [$exception->getMessage()],

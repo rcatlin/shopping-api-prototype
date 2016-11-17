@@ -19,11 +19,6 @@ use Symfony\Component\Form\FormFactory;
 class RetailerHandler
 {
     /**
-     * @var FormFactory
-     */
-    private $formFactory;
-
-    /**
      * @var ObjectManager
      */
     private $objectManager;
@@ -51,12 +46,10 @@ class RetailerHandler
         $this->repository = $repository;
     }
 
-    public function delete($uuid)
+    public function delete(Retailer $retailer)
     {
-        $product = $this->get($uuid);
-
         try {
-            $this->objectManager->remove($product);
+            $this->objectManager->remove($retailer);
             $this->objectManager->flush();
         } catch (\Exception $exception) {
             throw new PersistenceException();
