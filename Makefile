@@ -22,3 +22,8 @@ test_migrate:
 test_db:
 	mysql -uroot -e "DROP DATABASE IF EXISTS shopping_api_alpha_test"
 	mysql -uroot -e "CREATE DATABASE shopping_api_alpha_test"
+
+database:
+	mysql -uroot -e "DROP DATABASE IF EXISTS shopping_api_alpha"
+	mysql -uroot -e "CREATE DATABASE shopping_api_alpha"
+	./bin/console doctrine:migrations:migrate --no-interaction
