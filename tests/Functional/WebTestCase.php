@@ -65,7 +65,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
     /**
      * @return EntityManager|null
      */
-    private static function getEntityManager()
+    protected static function getEntityManager()
     {
         $container = static::$kernel->getContainer();
 
