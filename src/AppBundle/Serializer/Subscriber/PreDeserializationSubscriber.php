@@ -4,6 +4,7 @@ namespace AppBundle\Serializer\Subscriber;
 
 use AppBundle\Entity\IdentifiableInterface;
 use JMS\DiExtraBundle\Annotation as DI;
+use JMS\Serializer\Context;
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\PreDeserializeEvent;
 
@@ -29,15 +30,22 @@ class PreDeserializationSubscriber implements EventSubscriberInterface
 
     public function attachIdentifiableTargetId(PreDeserializeEvent $event)
     {
-        if (null === ($target = $this->getNonEmptyContextTarget($event))) {
-            return $event;
-        }
+        $context = $event->getContext();
 
-        if (!($target instanceof IdentifiableInterface)) {
+        if (
+            !$this->currentPathIsAtTopLevel($event->getContext())
+            || (null === ($target = $this->getNonEmptyContextTarget($context)))
+            || !($target instanceof IdentifiableInterface)
+        ) {
             return $event;
         }
 
         return $this->mutateEventDataWithId($event, $target->getId());
+    }
+
+    private function currentPathIsAtTopLevel(Context $context)
+    {
+        return empty($context->getCurrentPath());
     }
 
     /**
@@ -56,14 +64,13 @@ class PreDeserializationSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * @param PreDeserializeEvent $event
+     * @param Context $context
      *
-     * @return IdentifiableInterface|object|null
+     * @return IdentifiableInterface|null|object
      */
-    private function getNonEmptyContextTarget(PreDeserializeEvent $event)
+    private function getNonEmptyContextTarget(Context $context)
     {
-        $target = $event
-            ->getContext()
+        $target = $context
             ->attributes
             ->get('target');
 
