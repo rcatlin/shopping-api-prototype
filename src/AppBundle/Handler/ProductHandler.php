@@ -127,7 +127,6 @@ class ProductHandler
             $this->objectManager->persist($product);
             $this->objectManager->flush();
         } catch (\Exception $exception) {
-            var_dump($exception->getMessage());
             throw new PersistenceException();
         }
 
