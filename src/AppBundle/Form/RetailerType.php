@@ -45,7 +45,7 @@ class RetailerType extends AbstractType
      */
     public function getBlockPrefix()
     {
-        return '';
+        return 'retailer';
     }
 
 
