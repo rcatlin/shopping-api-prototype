@@ -1,6 +1,7 @@
 <?php
 
 namespace AppBundle\Controller;
+
 use AppBundle\Entity\Product;
 use AppBundle\Handler\ProductHandler;
 use AppBundle\RendersJson;

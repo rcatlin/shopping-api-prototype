@@ -6,9 +6,9 @@ use AppBundle\Entity\Product;
 use AppBundle\Repository\ProductRepository;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityNotFoundException;
-use Exception\DeserializationObjectNotFound;
 use Exception\InvalidFormException;
 use Exception\PersistenceException;
+use Exception\Serializer\Construction\ObjectNotConstructedException;
 use InvalidArgumentException;
 use JMS\DiExtraBundle\Annotation as DI;
 use JMS\Serializer\DeserializationContext;
@@ -117,8 +117,8 @@ class ProductHandler
      *
      * @return Product
      *
-     * @throws DeserializationObjectNotFound
      * @throws InvalidFormException
+     * @throws ObjectNotConstructedException
      * @throws PersistenceException
      */
     public function post($data)
@@ -142,10 +142,10 @@ class ProductHandler
      *
      * @return Product
      *
-     * @throws DeserializationObjectNotFound
      * @throws EntityNotFoundException
      * @throws InvalidArgumentException
      * @throws InvalidFormException
+     * @throws ObjectNotConstructedException
      * @throws PersistenceException
      */
     public function put(Product $product, $data)

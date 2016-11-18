@@ -7,6 +7,7 @@ use AppBundle\Repository\RetailerRepository;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityNotFoundException;
 use Exception\PersistenceException;
+use Exception\Serializer\Construction\ObjectNotConstructedException;
 use InvalidArgumentException;
 use JMS\DiExtraBundle\Annotation as DI;
 use JMS\Serializer\DeserializationContext;
@@ -100,6 +101,7 @@ class RetailerHandler
      *
      * @return Retailer
      *
+     * @throws ObjectNotConstructedException
      * @throws PersistenceException
      */
     public function post($data)
@@ -123,6 +125,7 @@ class RetailerHandler
      *
      * @return Retailer
      *
+     * @throws ObjectNotConstructedException
      * @throws PersistenceException
      */
     public function put(Retailer $retailer, $data)

@@ -1,6 +1,5 @@
 <?php
 
-use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Config\Loader\LoaderInterface;
 
