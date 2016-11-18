@@ -68,6 +68,7 @@ class ProductCRUDController
             return $this->renderJson(400, [
                 'errors' => $exception->getMessage(),
                 'data' => $exception->getData(),
+                'path' => $exception->getPath(),
             ]);
         } catch (InvalidFormException $exception) {
             return $this->renderJson(400, [
@@ -162,6 +163,7 @@ class ProductCRUDController
             return $this->renderJson(400, [
                 'errors' => $exception->getMessage(),
                 'data' => $exception->getData(),
+                'path' => $exception->getPath(),
             ]);
         } catch (EntityNotFoundException $exception) {
             return $this->renderJson(404, [

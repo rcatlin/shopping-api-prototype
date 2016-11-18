@@ -160,11 +160,13 @@ class ProductCRUDEditControllerTest extends WebTestCase
 
         $content = json_decode($response->getContent(), true);
 
-        $this->assertArrayHasKeys(['errors', 'data'], $content);
+        $this->assertArrayHasKeys(['errors', 'data', 'path'], $content);
         $this->assertArrayHasKeys(['id', 'name', 'url'], $content['data']);
 
         $this->assertSame($badRetailerId->toString(), $content['data']['id']);
         $this->assertSame($retailerName, $content['data']['name']);
         $this->assertSame($retailerUrl, $content['data']['url']);
+
+        $this->assertSame(['retailer'], $content['path']);
     }
 }

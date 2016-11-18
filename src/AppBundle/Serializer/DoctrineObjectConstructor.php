@@ -32,7 +32,11 @@ class DoctrineObjectConstructor extends BaseDoctrineObjectConstructor
         $object = parent::construct($visitor, $metadata, $data, $type, $context);
 
         if ($object === null) {
-            throw new ObjectNotConstructedException($metadata->name, $data, $type);
+            throw new ObjectNotConstructedException(
+                $metadata->name,
+                $data,
+                $context->getCurrentPath()
+            );
         }
 
         return $object;
