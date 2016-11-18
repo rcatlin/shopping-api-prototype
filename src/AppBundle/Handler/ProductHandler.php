@@ -14,18 +14,12 @@ use JMS\DiExtraBundle\Annotation as DI;
 use JMS\Serializer\DeserializationContext;
 use JMS\Serializer\Serializer;
 use Ramsey\Uuid\Uuid;
-use Symfony\Component\Form\FormFactory;
 
 /**
  * @DI\Service("handler.product")
  */
 class ProductHandler
 {
-    /**
-     * @var FormFactory
-     */
-    private $formFactory;
-
     /**
      * @var ObjectManager
      */
@@ -42,30 +36,21 @@ class ProductHandler
     private $serializer;
 
     /**
-     * @var \FOS\RestBundle\Serializer\Serializer
-     */
-    private $objectSerializer;
-
-    /**
      * @DI\InjectParams({
-     *     "formFactory"=@DI\Inject("form.factory"),
      *     "objectManager"=@DI\Inject("doctrine.orm.default_entity_manager"),
      *     "repository"=@DI\Inject("repository.product"),
      *     "serializer"=@DI\Inject("jms_serializer")
      * })
      *
-     * @param FormFactory $formFactory
      * @param ObjectManager $objectManager
      * @param ProductRepository $repository
      * @param Serializer $serializer
      */
     public function __construct(
-        FormFactory $formFactory,
         ObjectManager $objectManager,
         ProductRepository $repository,
         Serializer $serializer
     ) {
-        $this->formFactory = $formFactory;
         $this->objectManager = $objectManager;
         $this->repository = $repository;
         $this->serializer = $serializer;
