@@ -6,6 +6,7 @@ use AppBundle\Entity\Product;
 use AppBundle\Repository\ProductRepository;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityNotFoundException;
+use Exception\DeserializationObjectNotFound;
 use Exception\InvalidFormException;
 use Exception\PersistenceException;
 use InvalidArgumentException;
@@ -116,6 +117,7 @@ class ProductHandler
      *
      * @return Product
      *
+     * @throws DeserializationObjectNotFound
      * @throws InvalidFormException
      * @throws PersistenceException
      */
@@ -140,6 +142,7 @@ class ProductHandler
      *
      * @return Product
      *
+     * @throws DeserializationObjectNotFound
      * @throws EntityNotFoundException
      * @throws InvalidArgumentException
      * @throws InvalidFormException

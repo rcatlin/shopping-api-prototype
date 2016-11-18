@@ -14,7 +14,13 @@ services:
         factory: ["@doctrine", "getRepository"]
         arguments: ["AppBundle\\Entity\\Retailer"]
 
-    # Properly handles deserialization of existing Doctrine Objects (PUT request)
+    # Properly handles:
+    #     - deserialization of existing Doctrine Objects (PUT request)
+    #     - a NULL constructed/deserialized Object, throws an Exception.
+    jms_serializer.doctrine_object_constructor:
+        class: AppBundle\Serializer\DoctrineObjectConstructor
+        arguments: ["@doctrine", "@jms_serializer.unserialize_object_constructor"]
+
     jms_serializer.object_constructor:
         alias: jms_serializer.doctrine_object_constructor
 

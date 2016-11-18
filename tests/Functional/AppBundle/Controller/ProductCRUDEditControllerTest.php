@@ -2,6 +2,8 @@
 
 namespace Tests\Functional\AppBundle\Controller;
 
+use Ramsey\Uuid\Doctrine\UuidGenerator;
+use Ramsey\Uuid\Uuid;
 use Tests\AssertsArrayHasKeys;
 use Tests\Fixtures\ProductFixture;
 use Tests\Fixtures\RetailerFixture;
@@ -125,5 +127,44 @@ class ProductCRUDEditControllerTest extends WebTestCase
         $this->assertSame($retailerId, $content['result']['retailer']['id']);
         $this->assertSame($retailerName, $content['result']['retailer']['name']);
         $this->assertSame($retailerUrl, $content['result']['retailer']['url']);
+    }
+
+    public function testEditFailsWithBadRetailerId()
+    {
+        $client = self::createClient();
+
+        $productName = 'Foo';
+        $productPrice = 9876;
+        $retailerName = 'Bar';
+        $retailerUrl = 'http://www.bar.com/';
+
+        $product = (new ProductFixture($productName, $productPrice))->load($this->getEntityManager());
+
+        $productId = $product->getId()->toString();
+        $productUrl = '/api/products/' . $productId;
+        $badRetailerId = Uuid::getFactory()->uuid4();
+
+        $client->request('PUT', $productUrl, [], [], [], json_encode([
+            'name' => $productName,
+            'price' => $productPrice,
+            'retailer' => [
+                'id' => $badRetailerId,
+                'name' => $retailerName,
+                'url' => $retailerUrl,
+            ]
+        ]));
+
+        $response = $client->getResponse();
+
+        $this->assertSame(400, $response->getStatusCode());
+
+        $content = json_decode($response->getContent(), true);
+
+        $this->assertArrayHasKeys(['errors', 'data'], $content);
+        $this->assertArrayHasKeys(['id', 'name', 'url'], $content['data']);
+
+        $this->assertSame($badRetailerId->toString(), $content['data']['id']);
+        $this->assertSame($retailerName, $content['data']['name']);
+        $this->assertSame($retailerUrl, $content['data']['url']);
     }
 }

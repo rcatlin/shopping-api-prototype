@@ -6,8 +6,10 @@ use AppBundle\Handler\ProductHandler;
 use AppBundle\RendersJson;
 use Doctrine\ORM\EntityNotFoundException;
 use Exception\InvalidFormException;
+use Exception\Serializer\Construction\ObjectNotConstructedException;
 use Exception\PersistenceException;
 use FOS\RestBundle\Controller\Annotations\Route;
+use InvalidArgumentException;
 use JMS\DiExtraBundle\Annotation as DI;
 use JMS\Serializer\Serializer;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
@@ -46,7 +48,7 @@ class ProductCRUDController
      *     description="Creates a New Product",
      *     statusCodes={
      *         201="Product was successfully created and persisted",
-     *         400="Invalid Product Data",
+     *         400="Bad Request Data",
      *         500="Server encountered an error persisting the Product"
      *     }
      * )
@@ -62,6 +64,11 @@ class ProductCRUDController
     {
         try {
             $product = $this->handler->post($request->getContent());
+        } catch (ObjectNotConstructedException $exception) {
+            return $this->renderJson(400, [
+                'errors' => $exception->getMessage(),
+                'data' => $exception->getData(),
+            ]);
         } catch (InvalidFormException $exception) {
             return $this->renderJson(400, [
                 'errors' => $exception->getErrors(),
@@ -151,6 +158,11 @@ class ProductCRUDController
     {
         try {
             $product = $this->handler->put($product, $request->getContent());
+        } catch (ObjectNotConstructedException $exception) {
+            return $this->renderJson(400, [
+                'errors' => $exception->getMessage(),
+                'data' => $exception->getData(),
+            ]);
         } catch (EntityNotFoundException $exception) {
             return $this->renderJson(404, [
                 'errors' => [$exception->getMessage()],
