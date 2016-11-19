@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Retailer;
+use AppBundle\GetsRequestSerializationGroups;
 use AppBundle\Handler\RetailerHandler;
 use AppBundle\RendersJson;
 use Doctrine\ORM\EntityNotFoundException;
@@ -23,6 +24,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class RetailerCRUDController extends FOSRestController
 {
+    use GetsRequestSerializationGroups;
     use RendersJson;
 
     const LIMIT = 10;
@@ -76,7 +78,10 @@ class RetailerCRUDController extends FOSRestController
         }
 
         return $this->renderJson(201, [
-            'result' => $this->serializer->toArray($retailer),
+            'result' => $this->serializer->toArray(
+                $retailer,
+                $this->getSerializationContextFromRequest($request)
+            ),
         ]);
     }
 
@@ -162,7 +167,9 @@ class RetailerCRUDController extends FOSRestController
         }
 
         return $this->renderJson(201, [
-            'result' => $this->serializer->toArray($retailer),
+            'result' => $this->serializer->toArray($retailer,
+                $this->getSerializationContextFromRequest($request)
+            ),
         ]);
     }
 
@@ -188,18 +195,22 @@ class RetailerCRUDController extends FOSRestController
      */
     public function getList(Request $request)
     {
-        $list = $this->handler->getList(
+        $retailers = $this->handler->getList(
             (int) $request->query->get('offset', self::OFFSET),
             (int) $request->query->get('limit', self::LIMIT)
         );
 
-        if (empty($list)) {
+        if (empty($retailers)) {
             return $this->renderJson(204);
         }
 
-        return $this->renderJson(200, [
-            'result' => array_map([$this->serializer, 'toArray'], $list),
-        ]);
+        $serialized = [];
+        $context = $this->getSerializationContextFromRequest($request);
+        foreach ($retailers as $retailer) {
+            $serialized[] = $this->serializer->toArray($retailer, $context);
+        }
+
+        return $this->renderJson(200, ['result' => $serialized]);
     }
 
     /**
@@ -224,14 +235,17 @@ class RetailerCRUDController extends FOSRestController
      *     }
      * )
      *
+     * @param Request $request
      * @param Retailer $retailer
      *
      * @return Response
      */
-    public function getRetailer(Retailer $retailer)
+    public function getRetailer(Request $request, Retailer $retailer)
     {
         return $this->renderJson(200, [
-            'result' => $this->serializer->toArray($retailer),
+            'result' => $this->serializer->toArray($retailer,
+                $this->getSerializationContextFromRequest($request)
+            ),
         ]);
     }
 }
