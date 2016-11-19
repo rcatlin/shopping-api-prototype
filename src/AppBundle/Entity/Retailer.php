@@ -28,9 +28,7 @@ class Retailer implements IdentifiableInterface
      *
      * @Serializer\Expose()
      * @Serializer\Groups({"default"})
-     * @Serializer\Accessor(getter="getId")
      * @Serializer\ReadOnly(true)
-     * @Serializer\SerializedName("id")
      * @Serializer\Type("string")
      */
     private $id;
@@ -53,11 +51,6 @@ class Retailer implements IdentifiableInterface
      *
      * @Serializer\Expose()
      * @Serializer\Groups({"default"})
-     * @Serializer\Accessor(
-     *     getter="getName",
-     *     setter="setName"
-     * )
-     * @Serializer\SerializedName("name")
      * @Serializer\Type("string")
      */
     private $name;
@@ -90,11 +83,6 @@ class Retailer implements IdentifiableInterface
      *
      * @Serializer\Expose()
      * @Serializer\Groups({"default"})
-     * @Serializer\Accessor(
-     *     getter="getUrl",
-     *     setter="setUrl"
-     * )
-     * @Serializer\SerializedName("url")
      * @Serializer\Type("string")
      */
     private $url;

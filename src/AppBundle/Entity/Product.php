@@ -27,9 +27,7 @@ class Product implements IdentifiableInterface
      *
      * @Serializer\Expose()
      * @Serializer\Groups({"default"})
-     * @Serializer\Accessor(getter="getId")
      * @Serializer\ReadOnly(true)
-     * @Serializer\SerializedName("id")
      * @Serializer\Type("string")
      */
     private $id;
@@ -47,8 +45,6 @@ class Product implements IdentifiableInterface
      *
      * @Serializer\Expose()
      * @Serializer\Groups({"default"})
-     * @Serializer\Accessor(getter="getName", setter="setName")
-     * @Serializer\SerializedName("name")
      * @Serializer\Type("string")
      */
     private $name;
@@ -71,8 +67,6 @@ class Product implements IdentifiableInterface
      *
      * @Serializer\Expose()
      * @Serializer\Groups({"default"})
-     * @Serializer\Accessor(getter="getPrice", setter="setPrice")
-     * @Serializer\SerializedName("price")
      * @Serializer\Type("integer")
      */
     private $price;
@@ -89,11 +83,6 @@ class Product implements IdentifiableInterface
      * @Serializer\Expose()
      * @Serializer\Groups({"retailer"})
      * @Serializer\MaxDepth(1)
-     * @Serializer\SerializedName("retailer")
-     * @Serializer\Accessor(
-     *     getter="getRetailer",
-     *     setter="setRetailer"
-     * )
      */
     private $retailer;
 
