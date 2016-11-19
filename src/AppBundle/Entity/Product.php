@@ -26,6 +26,7 @@ class Product implements IdentifiableInterface
      * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
      *
      * @Serializer\Expose()
+     * @Serializer\Groups({"default"})
      * @Serializer\Accessor(getter="getId")
      * @Serializer\ReadOnly(true)
      * @Serializer\SerializedName("id")
@@ -45,6 +46,7 @@ class Product implements IdentifiableInterface
      * @ORM\Column(name="name", type="string", length=255)
      *
      * @Serializer\Expose()
+     * @Serializer\Groups({"default"})
      * @Serializer\Accessor(getter="getName", setter="setName")
      * @Serializer\SerializedName("name")
      * @Serializer\Type("string")
@@ -68,6 +70,7 @@ class Product implements IdentifiableInterface
      * @ORM\Column(name="price", type="bigint", nullable=true)
      *
      * @Serializer\Expose()
+     * @Serializer\Groups({"default"})
      * @Serializer\Accessor(getter="getPrice", setter="setPrice")
      * @Serializer\SerializedName("price")
      * @Serializer\Type("integer")
@@ -83,6 +86,7 @@ class Product implements IdentifiableInterface
      * )
      *
      * @Serializer\Expose()
+     * @Serializer\Groups({"retailer"})
      * @Serializer\SerializedName("retailer")
      * @Serializer\Accessor(
      *     getter="getRetailer",

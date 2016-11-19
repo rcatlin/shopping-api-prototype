@@ -27,6 +27,7 @@ class Retailer implements IdentifiableInterface
      * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
      *
      * @Serializer\Expose()
+     * @Serializer\Groups({"default"})
      * @Serializer\Accessor(getter="getId")
      * @Serializer\ReadOnly(true)
      * @Serializer\SerializedName("id")
@@ -51,6 +52,7 @@ class Retailer implements IdentifiableInterface
      * )
      *
      * @Serializer\Expose()
+     * @Serializer\Groups({"default"})
      * @Serializer\Accessor(
      *     getter="getName",
      *     setter="setName"
@@ -83,6 +85,7 @@ class Retailer implements IdentifiableInterface
      * )
      *
      * @Serializer\Expose()
+     * @Serializer\Groups({"default"})
      * @Serializer\Accessor(
      *     getter="getUrl",
      *     setter="setUrl"

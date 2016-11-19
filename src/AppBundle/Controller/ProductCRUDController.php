@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Product;
+use AppBundle\GetsRequestSerializationGroups;
 use AppBundle\Handler\ProductHandler;
 use AppBundle\RendersJson;
 use Doctrine\ORM\EntityNotFoundException;
@@ -24,6 +25,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class ProductCRUDController
 {
+    use GetsRequestSerializationGroups;
     use RendersJson;
 
     const LIMIT = 10;
@@ -82,7 +84,10 @@ class ProductCRUDController
         }
 
         return $this->renderJson(201, [
-            'result' => $this->serializer->toArray($product),
+            'result' => $this->serializer->toArray(
+                $product,
+                $this->getSerializationContextFromRequest($request)
+            ),
         ]);
     }
 
@@ -185,7 +190,10 @@ class ProductCRUDController
         }
 
         return $this->renderJson(201, [
-            'result' => $this->serializer->toArray($product),
+            'result' => $this->serializer->toArray(
+                $product,
+                $this->getSerializationContextFromRequest($request)
+            ),
         ]);
     }
 
@@ -211,17 +219,23 @@ class ProductCRUDController
      */
     public function getList(Request $request)
     {
-        $list = $this->handler->getList(
+        $products = $this->handler->getList(
             (int) $request->query->get('offset', self::OFFSET),
             (int) $request->query->get('limit', self::LIMIT)
         );
 
-        if (empty($list)) {
+        if (empty($products)) {
             return $this->renderJson(204);
         }
 
+        $serialized = [];
+        $context = $this->getSerializationContextFromRequest($request);
+        foreach ($products as $product) {
+            $serialized[] = $this->serializer->toArray($product, $context);
+        }
+
         return $this->renderJson(200, [
-            'result' => array_map([$this->serializer, 'toArray'], $list),
+            'result' => $serialized,
         ]);
     }
 
@@ -247,14 +261,18 @@ class ProductCRUDController
      *     }
      * )
      *
+     * @param Request $request
      * @param Product $product
      *
      * @return Response
      */
-    public function getProduct(Product $product)
+    public function getProduct(Request $request, Product $product)
     {
         return $this->renderJson(200, [
-            'result' => $this->serializer->toArray($product),
+            'result' => $this->serializer->toArray(
+                $product,
+                $this->getSerializationContextFromRequest($request)
+            ),
         ]);
     }
 }
