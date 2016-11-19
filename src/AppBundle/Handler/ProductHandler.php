@@ -14,6 +14,7 @@ use JMS\DiExtraBundle\Annotation as DI;
 use JMS\Serializer\DeserializationContext;
 use JMS\Serializer\Serializer;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @DI\Service("handler.product")

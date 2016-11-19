@@ -74,6 +74,7 @@ class Retailer implements IdentifiableInterface
      * @var string
      *
      * @Assert\NotBlank(message="Url should not be blank.")
+     * @Assert\Url()
      *
      * @ORM\Column(
      *     name="url",

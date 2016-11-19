@@ -6,6 +6,7 @@ use AppBundle\Entity\Product;
 use AppBundle\GetsRequestSerializationGroups;
 use AppBundle\Handler\ProductHandler;
 use AppBundle\RendersJson;
+use AppBundle\ValidatesEntity;
 use Doctrine\ORM\EntityNotFoundException;
 use Exception\InvalidFormException;
 use Exception\Serializer\Construction\ObjectNotConstructedException;
@@ -19,6 +20,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @Route(path="/api/products")
@@ -27,6 +29,7 @@ class ProductCRUDController
 {
     use GetsRequestSerializationGroups;
     use RendersJson;
+    use ValidatesEntity;
 
     const LIMIT = 10;
     const OFFSET = 0;
@@ -44,6 +47,13 @@ class ProductCRUDController
      * @var Serializer
      */
     private $serializer;
+
+    /**
+     * @DI\Inject("validator")
+     *
+     * @var ValidatorInterface
+     */
+    private $validator;
 
     /**
      * @ApiDoc(
@@ -81,6 +91,11 @@ class ProductCRUDController
             return $this->renderJson(500, [
                 'errors' => $exception->getMessage(),
             ]);
+        }
+
+        $errors = $this->validateEntity($this->validator, $product);
+        if (!empty($errors)) {
+            return $this->renderJson(400, ['errors' => $errors]);
         }
 
         return $this->renderJson(201, [
@@ -187,6 +202,11 @@ class ProductCRUDController
             return $this->renderJson(500, [
                 'errors' => $exception->getMessage(),
             ]);
+        }
+
+        $errors = $this->validateEntity($this->validator, $product);
+        if (!empty($errors)) {
+            return $this->renderJson(400, ['errors' => $errors]);
         }
 
         return $this->renderJson(201, [
