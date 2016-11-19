@@ -82,7 +82,8 @@ class Product implements IdentifiableInterface
      *
      * @ORM\ManyToOne(
      *     targetEntity="AppBundle\Entity\Retailer",
-     *     cascade={"PERSIST"}
+     *     cascade={"PERSIST"},
+     *     inversedBy="products"
      * )
      *
      * @Serializer\Expose()
