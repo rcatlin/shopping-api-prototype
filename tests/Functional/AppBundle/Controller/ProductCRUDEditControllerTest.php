@@ -46,7 +46,7 @@ class ProductCRUDEditControllerTest extends WebTestCase
         $this->assertSame($newPrice, $content['result']['price']);
     }
 
-    public function testEditWithNewRetailer()
+    public function testEditWithNewRetailerAndRetailerIncludes()
     {
         $client = self::createClient();
 
@@ -58,7 +58,7 @@ class ProductCRUDEditControllerTest extends WebTestCase
         $product = (new ProductFixture($name, $price))->load($this->getEntityManager());
 
         $productId = $product->getId()->toString();
-        $productUrl = '/api/products/' . $productId;
+        $productUrl = '/api/products/' . $productId . '?includes=retailer';
 
         $client->request('PUT', $productUrl, [], [], [], json_encode([
             'name' => $name,
@@ -86,7 +86,7 @@ class ProductCRUDEditControllerTest extends WebTestCase
         $this->assertSame($retailerUrl, $content['result']['retailer']['url']);
     }
 
-    public function testEditWithExistingRetailer()
+    public function testEditWithExistingRetailerAndRetailerIncludes()
     {
         $client = self::createClient();
 
@@ -99,7 +99,7 @@ class ProductCRUDEditControllerTest extends WebTestCase
         $retailer = (new RetailerFixture($retailerName, $retailerUrl))->load($this->getEntityManager());
 
         $productId = $product->getId()->toString();
-        $productUrl = '/api/products/' . $productId;
+        $productUrl = '/api/products/' . $productId . '?includes=retailer';
         $retailerId = $retailer->getId()->toString();
 
         $client->request('PUT', $productUrl, [], [], [], json_encode([

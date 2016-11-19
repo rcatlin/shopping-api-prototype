@@ -37,7 +37,7 @@ class ProductCRUDCreateControllerTest extends WebTestCase
         $this->assertSame($price, $result['price']);
     }
 
-    public function testCreateWithNewRetailer()
+    public function testCreateWithNewRetailerAndRetailerIncludes()
     {
         $name = 'Foo';
         $price = 5000;
@@ -46,7 +46,7 @@ class ProductCRUDCreateControllerTest extends WebTestCase
 
         $client = static::createClient();
 
-        $client->request('POST', '/api/products', [], [], [], json_encode([
+        $client->request('POST', '/api/products?includes=retailer', [], [], [], json_encode([
             'name' => $name,
             'price' => $price,
             'retailer' => [
