@@ -34,7 +34,8 @@ trait GetsRequestSerializationGroups
             $includes[$key] = trim($include);
         }
 
+        $includes[] = 'default';
 
-        return array_merge(['default'], $includes);
+        return $includes;
     }
 }
