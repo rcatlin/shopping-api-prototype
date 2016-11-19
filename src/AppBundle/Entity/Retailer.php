@@ -70,6 +70,9 @@ class Retailer implements IdentifiableInterface
      *     mappedBy="retailer",
      *     cascade={"persist"}
      * )
+     *
+     * @Serializer\Expose()
+     * @Serializer\Groups({"products"})
      */
     private $products;
 
@@ -161,7 +164,7 @@ class Retailer implements IdentifiableInterface
      */
     public function setProducts(ArrayCollection $products)
     {
-        $products->forAll(function ($product) {
+        $products->forAll(function ($key, $product) {
             /** @var Product $product */
             $product->setRetailer($this);
         });
