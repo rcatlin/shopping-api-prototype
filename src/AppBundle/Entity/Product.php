@@ -87,6 +87,7 @@ class Product implements IdentifiableInterface
      *
      * @Serializer\Expose()
      * @Serializer\Groups({"retailer"})
+     * @Serializer\MaxDepth(1)
      * @Serializer\SerializedName("retailer")
      * @Serializer\Accessor(
      *     getter="getRetailer",
