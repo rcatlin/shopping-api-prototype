@@ -90,7 +90,11 @@ class Category implements IdentifiableInterface
      *
      * @Serializer\Expose()
      * @Serializer\Groups({"children"})
-     * @Serializer\MaxDepth(1)
+     * @Serializer\MaxDepth(2)
+     * @Serializer\Accessor(
+     *     getter="getChildren",
+     *     setter="setChildren"
+     * )
      */
     private $children;
 
@@ -105,10 +109,14 @@ class Category implements IdentifiableInterface
     }
 
     /**
-     * @return ArrayCollection
+     * @return ArrayCollection|null
      */
     public function getChildren()
     {
+        if ($this->children === null || $this->children->isEmpty()) {
+            return null;
+        }
+
         return $this->children;
     }
 
