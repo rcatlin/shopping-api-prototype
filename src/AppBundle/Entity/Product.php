@@ -35,6 +35,8 @@ class Product implements IdentifiableInterface
     /**
      * @var Category|null
      *
+     * @Assert\Valid()
+     *
      * @ORM\ManyToOne(
      *     targetEntity="AppBundle\Entity\Category",
      *     inversedBy="products",
@@ -89,6 +91,8 @@ class Product implements IdentifiableInterface
 
     /**
      * @var Retailer
+     *
+     * @Assert\Valid()
      *
      * @ORM\ManyToOne(
      *     targetEntity="AppBundle\Entity\Retailer",

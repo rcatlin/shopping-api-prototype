@@ -57,6 +57,8 @@ class Category implements IdentifiableInterface
     /**
      * @var Category
      *
+     * @Assert\Valid()
+     *
      * @ORM\ManyToOne(
      *     targetEntity="AppBundle\Entity\Category",
      *     inversedBy="children",
@@ -83,6 +85,8 @@ class Category implements IdentifiableInterface
     /**
      * @var ArrayCollection
      *
+     * @Assert\Valid()
+     *
      * @ORM\OneToMany(
      *     targetEntity="AppBundle\Entity\Category",
      *     mappedBy="parent",
@@ -101,6 +105,8 @@ class Category implements IdentifiableInterface
 
     /**
      * @var ArrayCollection
+     *
+     * @Assert\Valid()
      *
      * @ORM\OneToMany(
      *     targetEntity="AppBundle\Entity\Product",

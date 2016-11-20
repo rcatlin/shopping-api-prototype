@@ -150,8 +150,6 @@ class ObjectHandler
             $object = $this->objectManager->merge($object);
             $this->objectManager->flush();
         } catch (\Exception $exception) {
-            var_dump($exception->getMessage());
-            var_export($exception->getTraceAsString());
             throw new PersistenceException();
         }
 

@@ -58,6 +58,8 @@ class Retailer implements IdentifiableInterface
     /**
      * @var ArrayCollection
      *
+     * @Assert\Valid()
+     *
      * @ORM\OneToMany(
      *     targetEntity="AppBundle\Entity\Product",
      *     mappedBy="retailer",
