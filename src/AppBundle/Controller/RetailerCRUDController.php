@@ -6,10 +6,10 @@ use AppBundle\Entity\Retailer;
 use AppBundle\GetsRequestSerializationGroups;
 use AppBundle\Handler\RetailerHandler;
 use AppBundle\RendersJson;
-use AppBundle\ValidatesEntity;
 use Doctrine\ORM\EntityNotFoundException;
 use Exception\InvalidFormException;
 use Exception\PersistenceException;
+use Exception\ValidationException;
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use JMS\DiExtraBundle\Annotation as DI;
@@ -19,7 +19,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @Route(path="/api/retailers")
@@ -76,6 +75,10 @@ class RetailerCRUDController extends FOSRestController
         } catch (PersistenceException $exception) {
             return $this->renderJson(500, [
                 'errors' => $exception->getMessage(),
+            ]);
+        } catch (ValidationException $exception) {
+            return $this->renderJson(400, [
+                'errors' => $exception->getErrors(),
             ]);
         }
 
@@ -165,6 +168,10 @@ class RetailerCRUDController extends FOSRestController
         } catch (PersistenceException $exception) {
             return $this->renderJson(500, [
                 'errors' => $exception->getMessage(),
+            ]);
+        } catch (ValidationException $exception) {
+            return $this->renderJson(400, [
+                'errors' => $exception->getErrors(),
             ]);
         }
 
@@ -274,6 +281,10 @@ class RetailerCRUDController extends FOSRestController
         } catch (PersistenceException $exception) {
             return $this->renderJson(500, [
                 'errors' => $exception->getMessage(),
+            ]);
+        } catch (ValidationException $exception) {
+            return $this->renderJson(400, [
+                'errors' => $exception->getErrors(),
             ]);
         }
 
