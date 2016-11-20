@@ -4,7 +4,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Retailer;
 use AppBundle\GetsRequestSerializationGroups;
-use AppBundle\Handler\RetailerHandler;
+use AppBundle\Handler\ObjectHandler;
 use AppBundle\RendersJson;
 use Doctrine\ORM\EntityNotFoundException;
 use Exception\InvalidFormException;
@@ -34,7 +34,7 @@ class RetailerCRUDController extends FOSRestController
     /**
      * @DI\Inject("handler.retailer")
      *
-     * @var RetailerHandler
+     * @var ObjectHandler
      */
     private $handler;
 

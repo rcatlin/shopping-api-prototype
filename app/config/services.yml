@@ -4,15 +4,34 @@ parameters:
 #    parameter_name: value
 
 services:
+    handler.product:
+        class: AppBundle\Handler\ObjectHandler
+        arguments:
+            - "AppBundle\\Entity\\Product"
+            - "@doctrine.orm.default_entity_manager"
+            - "@repository.product"
+            - "@serializer"
+            - "@validator"
+
+    handler.retailer:
+        class: AppBundle\Handler\ObjectHandler
+        arguments:
+            - "AppBundle\\Entity\\Retailer"
+            - "@doctrine.orm.default_entity_manager"
+            - "@repository.retailer"
+            - "@serializer"
+            - "@validator"
+
+    repository.retailer:
+        class: AppBundle\Repository\RetailerRepository
+        arguments: ["AppBundle\\Entity\\Retailer"]
+        factory: ["@doctrine", "getRepository"]
+
     repository.product:
         class: AppBundle\Repository\ProductRepository
         factory: ["@doctrine", "getRepository"]
         arguments: ["AppBundle\\Entity\\Product"]
 
-    repository.retailer:
-        class: AppBundle\Repository\RetailerRepository
-        factory: ["@doctrine", "getRepository"]
-        arguments: ["AppBundle\\Entity\\Retailer"]
 
     # Properly handles:
     #     - deserialization of existing Doctrine Objects (PUT request)

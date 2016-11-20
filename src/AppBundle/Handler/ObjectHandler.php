@@ -2,11 +2,10 @@
 
 namespace AppBundle\Handler;
 
-use AppBundle\Entity\Product;
-use AppBundle\Repository\ProductRepository;
 use AppBundle\ValidatesEntity;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\EntityRepository;
 use Exception\InvalidFormException;
 use Exception\PersistenceException;
 use Exception\Serializer\Construction\ObjectNotConstructedException;
@@ -19,11 +18,16 @@ use Ramsey\Uuid\Uuid;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
- * @DI\Service("handler.product")
+ * @DI\Service("handler.object")
  */
-class ProductHandler
+class ObjectHandler
 {
     use ValidatesEntity;
+
+    /**
+     * @var string
+     */
+    private $entityFcqn;
 
     /**
      * @var ObjectManager
@@ -31,7 +35,7 @@ class ProductHandler
     private $objectManager;
 
     /**
-     * @var ProductRepository
+     * @var EntityRepository
      */
     private $repository;
 
@@ -46,34 +50,35 @@ class ProductHandler
     private $validator;
 
     /**
-     * @DI\InjectParams({
-     *     "objectManager"=@DI\Inject("doctrine.orm.default_entity_manager"),
-     *     "repository"=@DI\Inject("repository.product"),
-     *     "serializer"=@DI\Inject("jms_serializer"),
-     *     "validator"=@DI\Inject("validator")
-     * })
-     *
+     * @param string $entityFqcn
      * @param ObjectManager $objectManager
-     * @param ProductRepository $repository
+     * @param EntityRepository $repository
      * @param Serializer $serializer
      * @param ValidatorInterface $validator
      */
     public function __construct(
+        $entityFqcn,
         ObjectManager $objectManager,
-        ProductRepository $repository,
+        EntityRepository $repository,
         Serializer $serializer,
         ValidatorInterface $validator
     ) {
+        $this->entityFcqn = $entityFqcn;
         $this->objectManager = $objectManager;
         $this->repository = $repository;
         $this->serializer = $serializer;
         $this->validator = $validator;
     }
 
-    public function delete(Product $product)
+    /**
+     * @param object $object
+     *
+     * @throws PersistenceException
+     */
+    public function delete($object)
     {
         try {
-            $this->objectManager->remove($product);
+            $this->objectManager->remove($object);
             $this->objectManager->flush();
         } catch (\Exception $exception) {
             throw new PersistenceException();
@@ -83,7 +88,7 @@ class ProductHandler
     /**
      * @param string $uuid
      *
-     * @return Product
+     * @return object
      *
      * @throws InvalidArgumentException
      * @throws EntityNotFoundException
@@ -92,18 +97,19 @@ class ProductHandler
     {
         $binaryUuid = $binaryUuid = Uuid::fromString($uuid);
 
-        $product = $this->repository->find($binaryUuid);
+        $object = $this->repository->find($binaryUuid);
 
-        if ($product === null) {
-            throw new EntityNotFoundException('Product not found with UUID: ' . $uuid);
+        if ($object === null) {
+            throw new EntityNotFoundException($this->entityFcqn . ' not found with UUID: ' . $uuid);
         }
 
-        return $product;
+        return $object;
     }
 
     /**
      * @param integer $offset
      * @param integer $limit
+     *
      * @return array
      */
     public function getList($offset, $limit)
@@ -112,40 +118,39 @@ class ProductHandler
     }
 
     /**
-     * @param Product $product
+     * @param object $object
      * @param string $data
      *
-     * @return Product
+     * @return object
      *
      * @throws PersistenceException
      * @throws ValidationException
      */
-    public function patch(Product $product, $data)
+    public function patch($object, $data)
     {
-        /** @var Product $product */
-        $product = $this->serializer->deserialize(
+        $object = $this->serializer->deserialize(
             $data,
-            'AppBundle\Entity\Product',
+            $this->entityFcqn,
             'json',
-            (new DeserializationContext())->setAttribute('target', $product)
+            (new DeserializationContext())->setAttribute('target', $object)
         );
 
-        $this->validateEntity($this->validator, $product);
+        $this->validateEntity($this->validator, $object);
 
         try {
-            $product = $this->objectManager->merge($product);
+            $object = $this->objectManager->merge($object);
             $this->objectManager->flush();
         } catch (\Exception $exception) {
             throw new PersistenceException();
         }
 
-        return $product;
+        return $object;
     }
 
     /**
      * @param string $data
      *
-     * @return Product|null
+     * @return object
      *
      * @throws InvalidFormException
      * @throws ObjectNotConstructedException
@@ -154,26 +159,25 @@ class ProductHandler
      */
     public function post($data)
     {
-        /** @var Product $product */
-        $product = $this->serializer->deserialize($data, 'AppBundle\Entity\Product', 'json');
+        $object = $this->serializer->deserialize($data, $this->entityFcqn, 'json');
 
-        $this->validateEntity($this->validator, $product);
+        $this->validateEntity($this->validator, $object);
 
         try {
-            $this->objectManager->persist($product);
+            $this->objectManager->persist($object);
             $this->objectManager->flush();
         } catch (\Exception $exception) {
             throw new PersistenceException();
         }
 
-        return $product;
+        return $object;
     }
 
     /**
-     * @param Product $product
+     * @param object $object
      * @param string $data
      *
-     * @return Product
+     * @return object
      *
      * @throws EntityNotFoundException
      * @throws InvalidArgumentException
@@ -181,16 +185,16 @@ class ProductHandler
      * @throws ObjectNotConstructedException
      * @throws PersistenceException
      */
-    public function put(Product $product, $data)
+    public function put($object, $data)
     {
-        $product = $this->serializer->deserialize(
+        $object = $this->serializer->deserialize(
             $data,
-            'AppBundle\Entity\Product',
+            $this->entityFcqn,
             'json',
-            (new DeserializationContext())->setAttribute('target', $product)
+            (new DeserializationContext())->setAttribute('target', $object)
         );
 
-        $this->validateEntity($this->validator, $product);
+        $this->validateEntity($this->validator, $object);
 
         try {
             $this->objectManager->flush();
@@ -198,6 +202,6 @@ class ProductHandler
             throw new PersistenceException();
         }
 
-        return $product;
+        return $object;
     }
 }

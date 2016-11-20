@@ -4,9 +4,8 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Product;
 use AppBundle\GetsRequestSerializationGroups;
-use AppBundle\Handler\ProductHandler;
+use AppBundle\Handler\ObjectHandler;
 use AppBundle\RendersJson;
-use AppBundle\ValidatesEntity;
 use Doctrine\ORM\EntityNotFoundException;
 use Exception\InvalidFormException;
 use Exception\Serializer\Construction\ObjectNotConstructedException;
@@ -36,7 +35,7 @@ class ProductCRUDController
     /**
      * @DI\Inject("handler.product")
      *
-     * @var ProductHandler
+     * @var ObjectHandler
      */
     private $handler;
 
