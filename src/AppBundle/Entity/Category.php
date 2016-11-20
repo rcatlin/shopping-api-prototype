@@ -67,6 +67,16 @@ class Category implements IdentifiableInterface
      */
     private $parent;
 
+    /**
+     * @var Uuid
+     *
+     * @ORM\Column(
+     *     name="parent_id",
+     *     nullable=true,
+     *     type="uuid_binary"
+     * )
+     */
+    private $parentId;
 
     /**
      * @var ArrayCollection
@@ -137,11 +147,11 @@ class Category implements IdentifiableInterface
     }
 
     /**
-     * @param Category $parent
+     * @param Category|null $parent
      *
      * @return Category
      */
-    public function setParent($parent)
+    public function setParent(Category $parent = null)
     {
         $this->parent = $parent;
 
@@ -149,7 +159,7 @@ class Category implements IdentifiableInterface
     }
 
     /**
-     * @return Category
+     * @return Category|null
      */
     public function getParent()
     {
