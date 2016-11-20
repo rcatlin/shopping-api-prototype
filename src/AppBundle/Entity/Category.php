@@ -59,9 +59,11 @@ class Category implements IdentifiableInterface
      *
      * @ORM\ManyToOne(
      *     targetEntity="AppBundle\Entity\Category",
-     *     inversedBy="children"
+     *     inversedBy="children",
+     *     cascade={"PERSIST"}
      * )
      *
+     * @Serializer\Expose()
      * @Serializer\Groups({"parent"})
      * @Serializer\MaxDepth(1)
      */
@@ -86,6 +88,7 @@ class Category implements IdentifiableInterface
      *     mappedBy="parent"
      * )
      *
+     * @Serializer\Expose()
      * @Serializer\Groups({"children"})
      * @Serializer\MaxDepth(1)
      */
