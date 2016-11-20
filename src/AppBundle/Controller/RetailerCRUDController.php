@@ -194,7 +194,7 @@ class RetailerCRUDController extends ObjectCRUDController
      *
      * @return Response
      */
-    public function updateRetailer(Request $request, Retailer $retailer)
+    public function partialUpdateRetailer(Request $request, Retailer $retailer)
     {
         return parent::updateObject($request, $retailer);
     }

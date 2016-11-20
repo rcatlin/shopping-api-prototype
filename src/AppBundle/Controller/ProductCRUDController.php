@@ -175,7 +175,7 @@ class ProductCRUDController extends ObjectCRUDController
     }
 
     /**
-     * @Route("/{uuid}", name="api_partially_update_product")
+     * @Route("/{uuid}", name="api_partial_update_product")
      * @Method({"PATCH"})
      *
      * @ParamConverter(
@@ -191,7 +191,7 @@ class ProductCRUDController extends ObjectCRUDController
      *
      * @return Response
      */
-    public function updateProduct(Request $request, Product $product)
+    public function partialUpdateProduct(Request $request, Product $product)
     {
         return parent::updateObject($request, $product);
     }
