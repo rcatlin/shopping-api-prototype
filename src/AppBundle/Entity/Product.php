@@ -60,10 +60,10 @@ class Product implements IdentifiableInterface
      * )
      * @Assert\Range(
      *     min=1,
-     *     minMessage="Price must be greater than or equal to a US penny."
+     *     minMessage="Price must bgreater than or equal to a US penny."
      * )
      *
-     * @ORM\Column(name="price", type="bigint", nullable=true)
+     * @ORM\Column(name="price", type="integer", nullable=true)
      *
      * @Serializer\Expose()
      * @Serializer\Groups({"default"})
@@ -136,7 +136,7 @@ class Product implements IdentifiableInterface
      */
     public function getPrice()
     {
-        return $this->price;
+        return (int) $this->price;
     }
 
     /**
@@ -144,7 +144,7 @@ class Product implements IdentifiableInterface
      */
     public function setPrice($price)
     {
-        $this->price = $price;
+        $this->price = (int) $price;
     }
 
     /**

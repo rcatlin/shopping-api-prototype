@@ -248,14 +248,11 @@ class ProductCRUDController
             return $this->renderJson(204);
         }
 
-        $serialized = [];
-        $context = $this->getSerializationContextFromRequest($request);
-        foreach ($products as $product) {
-            $serialized[] = $this->serializer->toArray($product, $context);
-        }
-
         return $this->renderJson(200, [
-            'result' => $serialized,
+            'result' => $this->serializer->toArray(
+                $products,
+                $this->getSerializationContextFromRequest($request)
+            ),
         ]);
     }
 
@@ -289,6 +286,46 @@ class ProductCRUDController
     public function getProduct(Request $request, Product $product)
     {
         return $this->renderJson(200, [
+            'result' => $this->serializer->toArray(
+                $product,
+                $this->getSerializationContextFromRequest($request)
+            ),
+        ]);
+    }
+
+    /**
+     * @Route("/{uuid}", name="api_partially_update_product")
+     * @Method({"PATCH"})
+     *
+     * @ParamConverter(
+     *     "product",
+     *     class="AppBundle\Entity\Product",
+     *     options={
+     *         "mapping": {"uuid": "id"}
+     *     }
+     * )
+     *
+     * @param Request $request
+     * @param Product $product
+     *
+     * @return Response
+     */
+    public function updateProduct(Request $request, Product $product)
+    {
+        try {
+            $product = $this->handler->patch($product, $request->getContent());
+        } catch (PersistenceException $exception) {
+            return $this->renderJson(500, [
+                'errors' => $exception->getMessage(),
+            ]);
+        }
+
+        $errors = $this->validateEntity($this->validator, $product);
+        if (!empty($errors)) {
+            return $this->renderJson(400, ['errors' => $errors]);
+        }
+
+        return $this->renderJson(202, [
             'result' => $this->serializer->toArray(
                 $product,
                 $this->getSerializationContextFromRequest($request)

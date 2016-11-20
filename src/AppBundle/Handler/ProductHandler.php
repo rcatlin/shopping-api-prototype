@@ -99,6 +99,34 @@ class ProductHandler
     }
 
     /**
+     * @param Product $product
+     * @param string $data
+     *
+     * @return Product
+     *
+     * @throws PersistenceException
+     */
+    public function patch(Product $product, $data)
+    {
+        /** @var Product $product */
+        $product = $this->serializer->deserialize(
+            $data,
+            'AppBundle\Entity\Product',
+            'json',
+            (new DeserializationContext())->setAttribute('target', $product)
+        );
+
+        try {
+            $product = $this->objectManager->merge($product);
+            $this->objectManager->flush();
+        } catch (\Exception $exception) {
+            throw new PersistenceException();
+        }
+
+        return $product;
+    }
+
+    /**
      * @param string $data
      *
      * @return Product

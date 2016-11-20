@@ -21,10 +21,10 @@ class RetailerCRUDUpdateControllerTest extends WebTestCase
 
         $response = $client->getResponse();
 
-//        $this->assertSame(202, $response->getStatusCode());
+        $this->assertSame(202, $response->getStatusCode());
 
         $content = json_decode($response->getContent(), true);
-        var_dump($content);
+
         $this->assertArrayHasKey('result', $content);
         $this->assertArrayHasKey('name', $content['result']);
         $this->assertSame($newName, $content['result']['name']);
