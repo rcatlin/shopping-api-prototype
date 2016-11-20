@@ -13,7 +13,8 @@ trait GetsRequestSerializationGroups
             ->getContext($context)
             ->setGroups(
                 $this->getIncludes($request)
-            );
+            )
+            ->enableMaxDepthChecks();
     }
 
     private function getContext(SerializationContext $context = null) {
