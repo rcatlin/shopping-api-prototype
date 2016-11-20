@@ -4,6 +4,15 @@ parameters:
 #    parameter_name: value
 
 services:
+    handler.category:
+            class: AppBundle\Handler\ObjectHandler
+            arguments:
+                - "AppBundle\\Entity\\Category"
+                - "@doctrine.orm.default_entity_manager"
+                - "@repository.category"
+                - "@serializer"
+                - "@validator"
+
     handler.product:
         class: AppBundle\Handler\ObjectHandler
         arguments:
@@ -21,6 +30,11 @@ services:
             - "@repository.retailer"
             - "@serializer"
             - "@validator"
+
+    repository.category:
+        class: AppBundle\Repository\CategoryRepository
+        arguments: ["AppBundle\\Entity\\Category"]
+        factory: ["@doctrine", "getRepository"]
 
     repository.retailer:
         class: AppBundle\Repository\RetailerRepository
