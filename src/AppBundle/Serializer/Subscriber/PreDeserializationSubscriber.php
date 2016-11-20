@@ -14,6 +14,12 @@ class PreDeserializationSubscriber implements EventSubscriberInterface
     {
         return [
             [
+                'class' => 'AppBundle\Entity\Category',
+                'event' => 'serializer.pre_deserialize',
+                'format' => 'json',
+                'method' => 'attachIdentifiableTargetId',
+            ],
+            [
                 'class' => 'AppBundle\Entity\Product',
                 'event' => 'serializer.pre_deserialize',
                 'format' => 'json',

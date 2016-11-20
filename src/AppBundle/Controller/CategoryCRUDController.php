@@ -3,44 +3,33 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Category;
-use AppBundle\GetsRequestSerializationGroups;
 use AppBundle\Handler\ObjectHandler;
-use AppBundle\RendersJson;
-use Exception\PersistenceException;
-use Exception\Serializer\Construction\ObjectNotConstructedException;
-use Exception\ValidationException;
 use FOS\RestBundle\Controller\Annotations\Route;
-use FOS\RestBundle\Controller\FOSRestController;
 use JMS\DiExtraBundle\Annotation as DI;
 use JMS\Serializer\Serializer;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @Route("/api/categories")
  */
-class CategoryCRUDController extends FOSRestController
+class CategoryCRUDController extends ObjectCRUDController
 {
-    use GetsRequestSerializationGroups;
-    use RendersJson;
-
-    const LIMIT = 10;
-    const OFFSET = 0;
-
     /**
-     * @var ObjectHandler
+     * @DI\InjectParams({
+     *     "handler"=@DI\Inject("handler.category"),
+     *     "serializer"=@DI\Inject("jms_serializer")
+     * })
      *
-     * @DI\Inject("handler.category")
+     * @param ObjectHandler $handler
+     * @param Serializer $serializer
      */
-    private $handler;
-
-    /**
-     * @var Serializer
-     *
-     * @DI\Inject("jms_serializer")
-     */
-    private $serializer;
+    public function __construct(ObjectHandler $handler, Serializer $serializer)
+    {
+        parent::__construct('AppBundle\Entity\Category', $handler, $serializer);
+    }
 
     /**
      * @Route("", name="api_create_category")
@@ -50,40 +39,74 @@ class CategoryCRUDController extends FOSRestController
      *
      * @return Response
      */
-    public function create(Request $request)
+    public function createCategory(Request $request)
     {
-        try {
-            $category = $this->handler->post($request->getContent());
-        }catch (ObjectNotConstructedException $exception) {
-            return $this->renderJson(400, [
-                'errors' => $exception->getMessage(),
-                'data' => $exception->getData(),
-                'path' => $exception->getPath(),
-            ]);
-        } catch (PersistenceException $exception) {
-            return $this->renderJson(500, [
-                'errors' => $exception->getMessage(),
-            ]);
-        } catch (ValidationException $exception) {
-            return $this->renderJson(400, ['errors' => $exception->getErrors()]);
-        }
-
-        return $this->renderJson(201, [
-            'result' => $this->serializer->toArray(
-                $category,
-                $this->getSerializationContextFromRequest($request)
-            ),
-        ]);
+       return parent::createObject($request);
     }
 
-    public function getCategory(Category $category)
+    /**
+     * @Route("/{uuid}", name="api_delete_category")
+     * @Method({"DELETE"})
+     *
+     * @ParamConverter(
+     *     "category",
+     *     class="AppBundle\Entity\Category",
+     *     options={
+     *         "mapping": {"uuid": "id"}
+     *     }
+     * )
+     *
+     * @param Category $category
+     *
+     * @return Response
+     */
+    public function deleteCategory(Category $category)
     {
-        return $this->renderJson(200, [
-            'result' => $this->serializer->toArray(
-                $category,
-                $this->getSerializationContextFromRequest($request)
-            ),
-        ]);
+        return parent::deleteObject($category);
+    }
+
+    /**
+     * @Route("/{uuid}", name="api_edit_category")
+     * @Method({"POST"})
+     *
+     * @ParamConverter(
+     *     "category",
+     *     class="AppBundle:Category",
+     *     options={
+     *         "mapping": {"uuid": "id"}
+     *     }
+     * )
+     *
+     * @param Request $request
+     * @param Category $category
+     *
+     * @return Response
+     */
+    public function editCategory(Request $request, Category $category)
+    {
+        return parent::editObject($request, $category);
+    }
+
+    /**
+     * @Route("/{uuid}", name="api_get_category")
+     * @Method({"GET"})
+     *
+     * @ParamConverter(
+     *     "category",
+     *     class="AppBundle\Entity\Category",
+     *     options={
+     *         "mapping": {"uuid": "id"}
+     *     }
+     * )
+     *
+     * @param Request $request
+     * @param Category $category
+     *
+     * @return Response
+     */
+    public function getCategory(Request $request, Category $category)
+    {
+        return parent::getObject($request, $category);
     }
 
     /**
@@ -94,18 +117,30 @@ class CategoryCRUDController extends FOSRestController
      *
      * @return Response
      */
-    public function getList(Request $request)
+    public function getCategoryList(Request $request)
     {
-        $list = $this->handler->getList(
-            $request->query->get('offset', self::OFFSET),
-            $request->query->get('limit', self::LIMIT)
-        );
+        return parent::getObjectList($request);
+    }
 
-        return $this->renderJson(200, [
-            'result' => $this->serializer->toArray(
-                $list,
-                $this->getSerializationContextFromRequest($request)
-            )
-        ]);
+    /**
+     * @Route("/{uuid}", name="api_partial_update_category")
+     * @Method({"PATCH"})
+     *
+     * @ParamConverter(
+     *     "category",
+     *     class="AppBundle\Entity\Category",
+     *     options={
+     *         "mapping": {"uuid": "id"}
+     *     }
+     * )
+     *
+     * @param Request $request
+     * @param Category $category
+     *
+     * @return Response
+     */
+    public function partialUpdateCategory(Request $request, Category $category)
+    {
+        return parent::updateObject($request, $category);
     }
 }

@@ -3,16 +3,8 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Product;
-use AppBundle\GetsRequestSerializationGroups;
 use AppBundle\Handler\ObjectHandler;
-use AppBundle\RendersJson;
-use Doctrine\ORM\EntityNotFoundException;
-use Exception\InvalidFormException;
-use Exception\Serializer\Construction\ObjectNotConstructedException;
-use Exception\PersistenceException;
-use Exception\ValidationException;
 use FOS\RestBundle\Controller\Annotations\Route;
-use InvalidArgumentException;
 use JMS\DiExtraBundle\Annotation as DI;
 use JMS\Serializer\Serializer;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
@@ -24,27 +16,20 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * @Route(path="/api/products")
  */
-class ProductCRUDController
+class ProductCRUDController extends ObjectCRUDController
 {
-    use GetsRequestSerializationGroups;
-    use RendersJson;
-
-    const LIMIT = 10;
-    const OFFSET = 0;
-
     /**
-     * @DI\Inject("handler.product")
-     *
-     * @var ObjectHandler
+     * @DI\InjectParams({
+     *     "handler"=@DI\Inject("handler.product"),
+     *     "serializer"=@DI\Inject("jms_serializer")
+     * })
+     * @param ObjectHandler $handler
+     * @param Serializer $serializer
      */
-    private $handler;
-
-    /**
-     * @DI\Inject("jms_serializer")
-     *
-     * @var Serializer
-     */
-    private $serializer;
+    public function __construct(ObjectHandler $handler, Serializer $serializer)
+    {
+        parent::__construct('AppBundle\Entity\Product', $handler, $serializer);
+    }
 
     /**
      * @ApiDoc(
@@ -66,32 +51,7 @@ class ProductCRUDController
      */
     public function create(Request $request)
     {
-        try {
-            $product = $this->handler->post($request->getContent());
-        } catch (ObjectNotConstructedException $exception) {
-            return $this->renderJson(400, [
-                'errors' => $exception->getMessage(),
-                'data' => $exception->getData(),
-                'path' => $exception->getPath(),
-            ]);
-        } catch (InvalidFormException $exception) {
-            return $this->renderJson(400, [
-                'errors' => $exception->getErrors(),
-            ]);
-        } catch (PersistenceException $exception) {
-            return $this->renderJson(500, [
-                'errors' => $exception->getMessage(),
-            ]);
-        } catch (ValidationException $exception) {
-            return $this->renderJson(400, ['errors' => $exception->getErrors()]);
-        }
-
-        return $this->renderJson(201, [
-            'result' => $this->serializer->toArray(
-                $product,
-                $this->getSerializationContextFromRequest($request)
-            ),
-        ]);
+        return parent::createObject($request);
     }
 
     /**
@@ -121,19 +81,7 @@ class ProductCRUDController
      */
     public function delete(Product $product)
     {
-        try {
-            $this->handler->delete($product);
-        } catch (EntityNotFoundException $exception) {
-            return $this->renderJson(404, [
-                'errors' => [$exception->getMessage()],
-            ]);
-        } catch (PersistenceException $exception) {
-            return $this->renderJson(500, [
-                'errors' => [$exception->getMessage()],
-            ]);
-        }
-
-        return $this->renderJson(204);
+        return parent::deleteObject($product);
     }
 
     /**
@@ -166,40 +114,7 @@ class ProductCRUDController
      */
     public function edit(Request $request, Product $product)
     {
-        try {
-            $product = $this->handler->put($product, $request->getContent());
-        } catch (ObjectNotConstructedException $exception) {
-            return $this->renderJson(400, [
-                'errors' => $exception->getMessage(),
-                'data' => $exception->getData(),
-                'path' => $exception->getPath(),
-            ]);
-        } catch (EntityNotFoundException $exception) {
-            return $this->renderJson(404, [
-                'errors' => [$exception->getMessage()],
-            ]);
-        } catch (InvalidArgumentException $exception) {
-            return $this->renderJson(400, [
-                'errors' => [$exception->getMessage()],
-            ]);
-        } catch (InvalidFormException $exception) {
-            return $this->renderJson(400, [
-                'errors' => $exception->getErrors(),
-            ]);
-        } catch (PersistenceException $exception) {
-            return $this->renderJson(500, [
-                'errors' => $exception->getMessage(),
-            ]);
-        } catch (ValidationException $exception) {
-            return $this->renderJson(400, ['errors' => $exception->getErrors()]);
-        }
-
-        return $this->renderJson(201, [
-            'result' => $this->serializer->toArray(
-                $product,
-                $this->getSerializationContextFromRequest($request)
-            ),
-        ]);
+        return parent::editObject($request, $product);
     }
 
     /**
@@ -224,21 +139,7 @@ class ProductCRUDController
      */
     public function getList(Request $request)
     {
-        $products = $this->handler->getList(
-            (int) $request->query->get('offset', self::OFFSET),
-            (int) $request->query->get('limit', self::LIMIT)
-        );
-
-        if (empty($products)) {
-            return $this->renderJson(204);
-        }
-
-        return $this->renderJson(200, [
-            'result' => $this->serializer->toArray(
-                $products,
-                $this->getSerializationContextFromRequest($request)
-            ),
-        ]);
+        return parent::getObjectList($request);
     }
 
     /**
@@ -270,12 +171,7 @@ class ProductCRUDController
      */
     public function getProduct(Request $request, Product $product)
     {
-        return $this->renderJson(200, [
-            'result' => $this->serializer->toArray(
-                $product,
-                $this->getSerializationContextFromRequest($request)
-            ),
-        ]);
+        return parent::getObject($request, $product);
     }
 
     /**
@@ -297,21 +193,6 @@ class ProductCRUDController
      */
     public function updateProduct(Request $request, Product $product)
     {
-        try {
-            $product = $this->handler->patch($product, $request->getContent());
-        } catch (PersistenceException $exception) {
-            return $this->renderJson(500, [
-                'errors' => $exception->getMessage(),
-            ]);
-        } catch (ValidationException $exception) {
-            return $this->renderJson(400, ['errors' => $exception->getErrors()]);
-        }
-
-        return $this->renderJson(202, [
-            'result' => $this->serializer->toArray(
-                $product,
-                $this->getSerializationContextFromRequest($request)
-            ),
-        ]);
+        return parent::updateObject($request, $product);
     }
 }

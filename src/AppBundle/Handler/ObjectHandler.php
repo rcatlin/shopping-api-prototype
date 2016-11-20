@@ -3,9 +3,11 @@
 namespace AppBundle\Handler;
 
 use AppBundle\ValidatesEntity;
+use Assert\Assertion;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\EntityRepository;
+use Exception\ObjectUpdateMismatchException;
 use Exception\PersistenceException;
 use Exception\Serializer\Construction\ObjectNotConstructedException;
 use Exception\ValidationException;
@@ -122,17 +124,26 @@ class ObjectHandler
      *
      * @return object
      *
+     * @throws ObjectUpdateMismatchException
      * @throws PersistenceException
      * @throws ValidationException
      */
     public function patch($object, $data)
     {
+        $originalId = $object->getId()->toString();
+
         $object = $this->serializer->deserialize(
             $data,
             $this->entityFcqn,
             'json',
             (new DeserializationContext())->setAttribute('target', $object)
         );
+
+        $finalId = $object->getId()->toString();
+
+        if ($originalId !== $finalId) {
+            throw new ObjectUpdateMismatchException($this->entityFcqn, $originalId);
+        }
 
         $this->validateEntity($this->validator, $object);
 

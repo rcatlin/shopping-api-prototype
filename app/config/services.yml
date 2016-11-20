@@ -5,13 +5,13 @@ parameters:
 
 services:
     handler.category:
-            class: AppBundle\Handler\ObjectHandler
-            arguments:
-                - "AppBundle\\Entity\\Category"
-                - "@doctrine.orm.default_entity_manager"
-                - "@repository.category"
-                - "@serializer"
-                - "@validator"
+        class: AppBundle\Handler\ObjectHandler
+        arguments:
+            - "AppBundle\\Entity\\Category"
+            - "@doctrine.orm.default_entity_manager"
+            - "@repository.category"
+            - "@serializer"
+            - "@validator"
 
     handler.product:
         class: AppBundle\Handler\ObjectHandler
@@ -43,8 +43,8 @@ services:
 
     repository.product:
         class: AppBundle\Repository\ProductRepository
-        factory: ["@doctrine", "getRepository"]
         arguments: ["AppBundle\\Entity\\Product"]
+        factory: ["@doctrine", "getRepository"]
 
 
     # Properly handles:

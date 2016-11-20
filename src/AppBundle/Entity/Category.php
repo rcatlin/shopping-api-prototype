@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @Serializer\ExclusionPolicy("all")
  */
-class Category
+class Category implements IdentifiableInterface
 {
     /**
      * @var int
@@ -35,8 +35,7 @@ class Category
     /**
      * @var string
      *
-     * @Assert\NotNull(message="Name cannot be empty.")
-     * @Assert\NotBlank(message="Name cannot be blank.")
+     * @Assert\NotNull()
      * @Assert\Type(
      *     type="string",
      *     message="Name must be a valid string."

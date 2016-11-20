@@ -27,6 +27,7 @@ class ProductCRUDUpdateControllerTest extends WebTestCase
 
         $this->assertArrayHasKey('result', $content);
         $this->assertArrayHasKey('price', $content['result']);
+        $this->assertSame($product->getId()->toString(), $content['result']['id']);
         $this->assertSame($newPrice, $content['result']['price']);
     }
 }

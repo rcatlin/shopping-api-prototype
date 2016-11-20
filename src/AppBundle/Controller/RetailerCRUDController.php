@@ -3,15 +3,8 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Retailer;
-use AppBundle\GetsRequestSerializationGroups;
 use AppBundle\Handler\ObjectHandler;
-use AppBundle\RendersJson;
-use Doctrine\ORM\EntityNotFoundException;
-use Exception\InvalidFormException;
-use Exception\PersistenceException;
-use Exception\ValidationException;
 use FOS\RestBundle\Controller\Annotations\Route;
-use FOS\RestBundle\Controller\FOSRestController;
 use JMS\DiExtraBundle\Annotation as DI;
 use JMS\Serializer\Serializer;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
@@ -23,27 +16,21 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * @Route(path="/api/retailers")
  */
-class RetailerCRUDController extends FOSRestController
+class RetailerCRUDController extends ObjectCRUDController
 {
-    use GetsRequestSerializationGroups;
-    use RendersJson;
-
-    const LIMIT = 10;
-    const OFFSET = 0;
-
     /**
-     * @DI\Inject("handler.retailer")
+     * @DI\InjectParams({
+     *     "handler"=@DI\Inject("handler.retailer"),
+     *     "serializer"=@DI\Inject("jms_serializer")
+     * })
      *
-     * @var ObjectHandler
+     * @param ObjectHandler $handler
+     * @param Serializer $serializer
      */
-    private $handler;
-
-    /**
-     * @DI\Inject("jms_serializer")
-     *
-     * @var Serializer
-     */
-    private $serializer;
+    public function __construct(ObjectHandler $handler, Serializer $serializer)
+    {
+        parent::__construct('AppBundle\Entity\Retailer', $handler, $serializer);
+    }
 
     /**
      * @ApiDoc(
@@ -66,28 +53,7 @@ class RetailerCRUDController extends FOSRestController
      */
     public function create(Request $request)
     {
-        try {
-            $retailer = $this->handler->post($request->getContent());
-        } catch (InvalidFormException $exception) {
-            return $this->renderJson(400, [
-                'errors' => $exception->getErrors(),
-            ]);
-        } catch (PersistenceException $exception) {
-            return $this->renderJson(500, [
-                'errors' => $exception->getMessage(),
-            ]);
-        } catch (ValidationException $exception) {
-            return $this->renderJson(400, [
-                'errors' => $exception->getErrors(),
-            ]);
-        }
-
-        return $this->renderJson(201, [
-            'result' => $this->serializer->toArray(
-                $retailer,
-                $this->getSerializationContextFromRequest($request)
-            ),
-        ]);
+        return parent::createObject($request);
     }
 
     /**
@@ -117,19 +83,7 @@ class RetailerCRUDController extends FOSRestController
      */
     public function delete(Retailer $retailer)
     {
-        try {
-            $this->handler->delete($retailer);
-        } catch (EntityNotFoundException $exception) {
-            return $this->renderJson(404, [
-                'errors' => [$exception->getMessage()],
-            ]);
-        } catch (PersistenceException $exception) {
-            return $this->renderJson(500, [
-                'errors' => [$exception->getMessage()],
-            ]);
-        }
-
-        return $this->renderJson(204);
+        return parent::deleteObject($retailer);
     }
 
     /**
@@ -163,23 +117,7 @@ class RetailerCRUDController extends FOSRestController
      */
     public function edit(Request $request, Retailer $retailer)
     {
-        try {
-            $retailer = $this->handler->put($retailer, $request->getContent());
-        } catch (PersistenceException $exception) {
-            return $this->renderJson(500, [
-                'errors' => $exception->getMessage(),
-            ]);
-        } catch (ValidationException $exception) {
-            return $this->renderJson(400, [
-                'errors' => $exception->getErrors(),
-            ]);
-        }
-
-        return $this->renderJson(201, [
-            'result' => $this->serializer->toArray($retailer,
-                $this->getSerializationContextFromRequest($request)
-            ),
-        ]);
+        return parent::editObject($request, $retailer);
     }
 
     /**
@@ -204,21 +142,7 @@ class RetailerCRUDController extends FOSRestController
      */
     public function getList(Request $request)
     {
-        $retailers = $this->handler->getList(
-            (int) $request->query->get('offset', self::OFFSET),
-            (int) $request->query->get('limit', self::LIMIT)
-        );
-
-        if (empty($retailers)) {
-            return $this->renderJson(204);
-        }
-
-        return $this->renderJson(200, [
-            'result' => $this->serializer->toArray(
-                $retailers,
-                $this->getSerializationContextFromRequest($request)
-            ),
-        ]);
+        return parent::getObjectList($request);
     }
 
     /**
@@ -250,15 +174,11 @@ class RetailerCRUDController extends FOSRestController
      */
     public function getRetailer(Request $request, Retailer $retailer)
     {
-        return $this->renderJson(200, [
-            'result' => $this->serializer->toArray($retailer,
-                $this->getSerializationContextFromRequest($request)
-            ),
-        ]);
+        return parent::getObject($request, $retailer);
     }
 
     /**
-     * @Route("/{uuid}", name="api_partially_update_retailer")
+     * @Route("/{uuid}", name="api_partial_update_retailer")
      * @Method({"PATCH"})
      *
      * @ParamConverter(
@@ -276,23 +196,6 @@ class RetailerCRUDController extends FOSRestController
      */
     public function updateRetailer(Request $request, Retailer $retailer)
     {
-        try {
-            $retailer = $this->handler->patch($retailer, $request->getContent());
-        } catch (PersistenceException $exception) {
-            return $this->renderJson(500, [
-                'errors' => $exception->getMessage(),
-            ]);
-        } catch (ValidationException $exception) {
-            return $this->renderJson(400, [
-                'errors' => $exception->getErrors(),
-            ]);
-        }
-
-        return $this->renderJson(202, [
-            'result' => $this->serializer->toArray(
-                $retailer,
-                $this->getSerializationContextFromRequest($request)
-            ),
-        ]);
+        return parent::updateObject($request, $retailer);
     }
 }
