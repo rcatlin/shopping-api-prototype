@@ -2,6 +2,8 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\CreatesSerializationContext;
+use AppBundle\GetsIncludes;
 use AppBundle\GetsRequestSerializationGroups;
 use AppBundle\Handler\ObjectHandler;
 use AppBundle\RendersJson;
@@ -19,7 +21,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ObjectCRUDController extends FOSRestController
 {
-    use GetsRequestSerializationGroups;
+    use CreatesSerializationContext;
+    use GetsIncludes;
     use RendersJson;
 
     const OFFSET = 0;
@@ -78,7 +81,9 @@ class ObjectCRUDController extends FOSRestController
         return $this->renderJson(201, [
             'result' => $this->serializer->toArray(
                 $object,
-                $this->getSerializationContextFromRequest($request)
+                $this->createSerializationContext(
+                    $this->getIncludes($request)
+                )
             ),
         ]);
     }
@@ -144,7 +149,9 @@ class ObjectCRUDController extends FOSRestController
         return $this->renderJson(201, [
             'result' => $this->serializer->toArray(
                 $object,
-                $this->getSerializationContextFromRequest($request)
+                $this->createSerializationContext(
+                    $this->getIncludes($request)
+                )
             ),
         ]);
     }
@@ -168,7 +175,9 @@ class ObjectCRUDController extends FOSRestController
         return $this->renderJson(200, [
             'result' => $this->serializer->toArray(
                 $products,
-                $this->getSerializationContextFromRequest($request)
+                $this->createSerializationContext(
+                    $this->getIncludes($request)
+                )
             ),
         ]);
     }
@@ -186,7 +195,9 @@ class ObjectCRUDController extends FOSRestController
         return $this->renderJson(200, [
             'result' => $this->serializer->toArray(
                 $object,
-                $this->getSerializationContextFromRequest($request)
+                $this->createSerializationContext(
+                    $this->getIncludes($request)
+                )
             ),
         ]);
     }
@@ -218,7 +229,9 @@ class ObjectCRUDController extends FOSRestController
         return $this->renderJson(202, [
             'result' => $this->serializer->toArray(
                 $object,
-                $this->getSerializationContextFromRequest($request)
+                $this->createSerializationContext(
+                    $this->getIncludes($request)
+                )
             ),
         ]);
     }
