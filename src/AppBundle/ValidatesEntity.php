@@ -2,6 +2,7 @@
 
 namespace AppBundle;
 
+use Exception\ValidationException;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -21,6 +22,8 @@ trait ValidatesEntity
             ];
         }
 
-        return $errors;
+        if (!empty($errors)) {
+            throw new ValidationException($errors);
+        }
     }
 }

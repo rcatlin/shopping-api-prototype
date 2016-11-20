@@ -4,11 +4,13 @@ namespace AppBundle\Handler;
 
 use AppBundle\Entity\Product;
 use AppBundle\Repository\ProductRepository;
+use AppBundle\ValidatesEntity;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityNotFoundException;
 use Exception\InvalidFormException;
 use Exception\PersistenceException;
 use Exception\Serializer\Construction\ObjectNotConstructedException;
+use Exception\ValidationException;
 use InvalidArgumentException;
 use JMS\DiExtraBundle\Annotation as DI;
 use JMS\Serializer\DeserializationContext;
@@ -21,6 +23,8 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  */
 class ProductHandler
 {
+    use ValidatesEntity;
+
     /**
      * @var ObjectManager
      */
@@ -37,24 +41,33 @@ class ProductHandler
     private $serializer;
 
     /**
+     * @var ValidatorInterface
+     */
+    private $validator;
+
+    /**
      * @DI\InjectParams({
      *     "objectManager"=@DI\Inject("doctrine.orm.default_entity_manager"),
      *     "repository"=@DI\Inject("repository.product"),
-     *     "serializer"=@DI\Inject("jms_serializer")
+     *     "serializer"=@DI\Inject("jms_serializer"),
+     *     "validator"=@DI\Inject("validator")
      * })
      *
      * @param ObjectManager $objectManager
      * @param ProductRepository $repository
      * @param Serializer $serializer
+     * @param ValidatorInterface $validator
      */
     public function __construct(
         ObjectManager $objectManager,
         ProductRepository $repository,
-        Serializer $serializer
+        Serializer $serializer,
+        ValidatorInterface $validator
     ) {
         $this->objectManager = $objectManager;
         $this->repository = $repository;
         $this->serializer = $serializer;
+        $this->validator = $validator;
     }
 
     public function delete(Product $product)
@@ -105,6 +118,7 @@ class ProductHandler
      * @return Product
      *
      * @throws PersistenceException
+     * @throws ValidationException
      */
     public function patch(Product $product, $data)
     {
@@ -115,6 +129,8 @@ class ProductHandler
             'json',
             (new DeserializationContext())->setAttribute('target', $product)
         );
+
+        $this->validateEntity($this->validator, $product);
 
         try {
             $product = $this->objectManager->merge($product);
@@ -129,16 +145,19 @@ class ProductHandler
     /**
      * @param string $data
      *
-     * @return Product
+     * @return Product|null
      *
      * @throws InvalidFormException
      * @throws ObjectNotConstructedException
      * @throws PersistenceException
+     * @throws ValidationException
      */
     public function post($data)
     {
         /** @var Product $product */
         $product = $this->serializer->deserialize($data, 'AppBundle\Entity\Product', 'json');
+
+        $this->validateEntity($this->validator, $product);
 
         try {
             $this->objectManager->persist($product);
@@ -164,12 +183,14 @@ class ProductHandler
      */
     public function put(Product $product, $data)
     {
-        $this->serializer->deserialize(
+        $product = $this->serializer->deserialize(
             $data,
             'AppBundle\Entity\Product',
             'json',
             (new DeserializationContext())->setAttribute('target', $product)
         );
+
+        $this->validateEntity($this->validator, $product);
 
         try {
             $this->objectManager->flush();

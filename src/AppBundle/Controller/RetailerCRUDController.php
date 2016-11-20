@@ -28,7 +28,6 @@ class RetailerCRUDController extends FOSRestController
 {
     use GetsRequestSerializationGroups;
     use RendersJson;
-    use ValidatesEntity;
 
     const LIMIT = 10;
     const OFFSET = 0;
@@ -46,13 +45,6 @@ class RetailerCRUDController extends FOSRestController
      * @var Serializer
      */
     private $serializer;
-
-    /**
-     * @DI\Inject("validator")
-     *
-     * @var ValidatorInterface
-     */
-    private $validator;
 
     /**
      * @ApiDoc(
@@ -85,11 +77,6 @@ class RetailerCRUDController extends FOSRestController
             return $this->renderJson(500, [
                 'errors' => $exception->getMessage(),
             ]);
-        }
-
-        $errors = $this->validateEntity($this->validator, $retailer);
-        if (!empty($errors)) {
-            return $this->renderJson(400, ['errors' => $errors]);
         }
 
         return $this->renderJson(201, [
@@ -179,11 +166,6 @@ class RetailerCRUDController extends FOSRestController
             return $this->renderJson(500, [
                 'errors' => $exception->getMessage(),
             ]);
-        }
-
-        $errors = $this->validateEntity($this->validator, $retailer);
-        if (!empty($errors)) {
-            return $this->renderJson(400, ['errors' => $errors]);
         }
 
         return $this->renderJson(201, [
@@ -293,11 +275,6 @@ class RetailerCRUDController extends FOSRestController
             return $this->renderJson(500, [
                 'errors' => $exception->getMessage(),
             ]);
-        }
-
-        $errors = $this->validateEntity($this->validator, $retailer);
-        if (!empty($errors)) {
-            return $this->renderJson(400, ['errors' => $errors]);
         }
 
         return $this->renderJson(202, [

@@ -11,6 +11,7 @@ use Doctrine\ORM\EntityNotFoundException;
 use Exception\InvalidFormException;
 use Exception\Serializer\Construction\ObjectNotConstructedException;
 use Exception\PersistenceException;
+use Exception\ValidationException;
 use FOS\RestBundle\Controller\Annotations\Route;
 use InvalidArgumentException;
 use JMS\DiExtraBundle\Annotation as DI;
@@ -20,7 +21,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @Route(path="/api/products")
@@ -29,7 +29,6 @@ class ProductCRUDController
 {
     use GetsRequestSerializationGroups;
     use RendersJson;
-    use ValidatesEntity;
 
     const LIMIT = 10;
     const OFFSET = 0;
@@ -47,13 +46,6 @@ class ProductCRUDController
      * @var Serializer
      */
     private $serializer;
-
-    /**
-     * @DI\Inject("validator")
-     *
-     * @var ValidatorInterface
-     */
-    private $validator;
 
     /**
      * @ApiDoc(
@@ -91,11 +83,8 @@ class ProductCRUDController
             return $this->renderJson(500, [
                 'errors' => $exception->getMessage(),
             ]);
-        }
-
-        $errors = $this->validateEntity($this->validator, $product);
-        if (!empty($errors)) {
-            return $this->renderJson(400, ['errors' => $errors]);
+        } catch (ValidationException $exception) {
+            return $this->renderJson(400, ['errors' => $exception->getErrors()]);
         }
 
         return $this->renderJson(201, [
@@ -202,11 +191,8 @@ class ProductCRUDController
             return $this->renderJson(500, [
                 'errors' => $exception->getMessage(),
             ]);
-        }
-
-        $errors = $this->validateEntity($this->validator, $product);
-        if (!empty($errors)) {
-            return $this->renderJson(400, ['errors' => $errors]);
+        } catch (ValidationException $exception) {
+            return $this->renderJson(400, ['errors' => $exception->getErrors()]);
         }
 
         return $this->renderJson(201, [
@@ -318,11 +304,8 @@ class ProductCRUDController
             return $this->renderJson(500, [
                 'errors' => $exception->getMessage(),
             ]);
-        }
-
-        $errors = $this->validateEntity($this->validator, $product);
-        if (!empty($errors)) {
-            return $this->renderJson(400, ['errors' => $errors]);
+        } catch (ValidationException $exception) {
+            return $this->renderJson(400, ['errors' => $exception->getErrors()]);
         }
 
         return $this->renderJson(202, [

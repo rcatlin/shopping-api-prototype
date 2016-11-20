@@ -4,6 +4,7 @@ namespace AppBundle\Handler;
 
 use AppBundle\Entity\Retailer;
 use AppBundle\Repository\RetailerRepository;
+use AppBundle\ValidatesEntity;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityNotFoundException;
 use Exception\PersistenceException;
@@ -13,12 +14,16 @@ use JMS\DiExtraBundle\Annotation as DI;
 use JMS\Serializer\DeserializationContext;
 use JMS\Serializer\Serializer;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\Validator\Constraints\Valid;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @DI\Service("handler.retailer")
  */
 class RetailerHandler
 {
+    use ValidatesEntity;
+
     /**
      * @var ObjectManager
      */
@@ -35,10 +40,16 @@ class RetailerHandler
     private $serializer;
 
     /**
+     * @var ValidatorInterface
+     */
+    private $validator;
+
+    /**
      * @DI\InjectParams({
      *     "objectManager"=@DI\Inject("doctrine.orm.default_entity_manager"),
      *     "repository"=@DI\Inject("repository.retailer"),
-     *     "serializer"=@DI\Inject("jms_serializer")
+     *     "serializer"=@DI\Inject("jms_serializer"),
+     *     "validator"=@DI\Inject("validator")
      * })
      *
      * @param ObjectManager $objectManager
@@ -48,11 +59,13 @@ class RetailerHandler
     public function __construct(
         ObjectManager $objectManager,
         RetailerRepository $repository,
-        Serializer $serializer
+        Serializer $serializer,
+        ValidatorInterface $validator
     ) {
         $this->objectManager = $objectManager;
         $this->repository = $repository;
         $this->serializer = $serializer;
+        $this->validator = $validator;
     }
 
     public function delete(Retailer $retailer)
@@ -114,6 +127,8 @@ class RetailerHandler
             (new DeserializationContext())->setAttribute('target', $retailer)
         );
 
+        $this->validateEntity($this->validator, $retailer);
+
         try {
             $retailer = $this->objectManager->merge($retailer);
             $this->objectManager->flush();
@@ -136,6 +151,8 @@ class RetailerHandler
     {
         /** @var Retailer $retailer */
         $retailer = $this->serializer->deserialize($data, 'AppBundle\Entity\Retailer', 'json');
+
+        $this->validateEntity($this->validator, $retailer);
 
         try {
             $this->objectManager->persist($retailer);
@@ -164,6 +181,8 @@ class RetailerHandler
             'json',
             (new DeserializationContext())->setAttribute('target', $retailer)
         );
+
+        $this->validateEntity($this->validator, $retailer);
 
         try {
             $this->objectManager->flush();
