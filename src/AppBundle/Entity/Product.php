@@ -54,13 +54,14 @@ class Product implements IdentifiableInterface
      *
      * @var integer
      *
+     * @Assert\NotNull()
      * @Assert\Type(
      *     type="integer",
      *     message="Price must be an integer."
      * )
      * @Assert\Range(
      *     min=1,
-     *     minMessage="Price must bgreater than or equal to a US penny."
+     *     minMessage="Price must be greater than or equal to a US penny."
      * )
      *
      * @ORM\Column(name="price", type="integer", nullable=true)
