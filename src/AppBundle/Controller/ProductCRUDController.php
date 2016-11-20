@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * @Route(path="/api/products")
  */
-class ProductCRUDController extends ObjectCRUDController
+class ProductCRUDController extends AbstractObjectCRUDController
 {
     /**
      * @DI\InjectParams({

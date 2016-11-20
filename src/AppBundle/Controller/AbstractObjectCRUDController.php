@@ -4,7 +4,6 @@ namespace AppBundle\Controller;
 
 use AppBundle\CreatesSerializationContext;
 use AppBundle\GetsIncludes;
-use AppBundle\GetsRequestSerializationGroups;
 use AppBundle\Handler\ObjectHandler;
 use AppBundle\RendersJson;
 use Assert\Assertion;
@@ -19,7 +18,7 @@ use JMS\Serializer\Serializer;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class ObjectCRUDController extends FOSRestController
+abstract class AbstractObjectCRUDController extends FOSRestController
 {
     use CreatesSerializationContext;
     use GetsIncludes;

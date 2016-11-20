@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * @Route("/api/categories")
  */
-class CategoryCRUDController extends ObjectCRUDController
+class CategoryCRUDController extends AbstractObjectCRUDController
 {
     /**
      * @DI\InjectParams({
