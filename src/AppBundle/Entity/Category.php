@@ -85,7 +85,8 @@ class Category implements IdentifiableInterface
      *
      * @ORM\OneToMany(
      *     targetEntity="AppBundle\Entity\Category",
-     *     mappedBy="parent"
+     *     mappedBy="parent",
+     *     cascade={"PERSIST"}
      * )
      *
      * @Serializer\Expose()
