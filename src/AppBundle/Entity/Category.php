@@ -109,7 +109,7 @@ class Category implements IdentifiableInterface
      *
      * @Serializer\Expose()
      * @Serializer\Groups({"products"})
-     * @Serializer\MaxDepth(1)
+     * @Serializer\MaxDepth(2)
      * @Serializer\Accessor(
      *     setter="setProducts"
      * )
