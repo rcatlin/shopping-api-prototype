@@ -12,26 +12,23 @@ class PreDeserializationSubscriber implements EventSubscriberInterface
 {
     public static function getSubscribedEvents()
     {
-        return [
-            [
-                'class' => 'AppBundle\Entity\Category',
-                'event' => 'serializer.pre_deserialize',
-                'format' => 'json',
-                'method' => 'attachIdentifiableTargetId',
-            ],
-            [
-                'class' => 'AppBundle\Entity\Product',
-                'event' => 'serializer.pre_deserialize',
-                'format' => 'json',
-                'method' => 'attachIdentifiableTargetId',
-            ],
-            [
-                'class' => 'AppBundle\Entity\Retailer',
-                'event' => 'serializer.pre_deserialize',
-                'format' => 'json',
-                'method' => 'attachIdentifiableTargetId',
-            ],
+        $classes = [
+            'AppBundle\Entity\Category',
+            'AppBundle\Entity\Product',
+            'AppBundle\Entity\Retailer',
         ];
+
+        $subscriptions = [];
+        foreach ($classes as $class) {
+            $subscriptions[] = [
+                'class' => $class,
+                'event' => 'serializer.pre_deserialize',
+                'format' => 'json',
+                'method' => 'attachIdentifiableTargetId',
+            ];
+        }
+
+        return $subscriptions;
     }
 
     public function attachIdentifiableTargetId(PreDeserializeEvent $event)
