@@ -66,7 +66,7 @@ class Retailer implements IdentifiableInterface
      *
      * @Serializer\Expose()
      * @Serializer\Groups({"products"})
-     * @Serializer\MaxDepth(1)
+     * @Serializer\MaxDepth(2)
      */
     private $products;
 
