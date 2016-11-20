@@ -32,4 +32,35 @@ class CategoryCRUDCreateControllerTest extends WebTestCase
         $this->assertNotNull($result['id']);
         $this->assertSame($name, $result['name']);
     }
+
+    public function testCreateWithParent()
+    {
+        $name = 'Foo';
+        $parentName = 'Bar';
+
+        $client = static::createClient();
+
+        $client->request('POST', '/api/categories?includes=parent', [], [], [], json_encode([
+            'name' => $name,
+            'parent' => [
+                'name' => $parentName,
+            ],
+        ]));
+
+        $response = $client->getResponse();
+
+        $this->assertSame(201, $response->getStatusCode());
+
+        $content = json_decode($response->getContent(), true);
+        $this->assertArrayHasKey('id', $content['result']);
+
+        $result = $content['result'];
+        $this->assertArrayHasKeys(['id', 'parent'], $result);
+
+        $this->assertNotNull($result['id']);
+        $this->assertNotNull($result['parent']['id']);
+
+        $this->assertSame($name, $result['name']);
+        $this->assertSame($parentName, $result['parent']['name']);
+    }
 }
