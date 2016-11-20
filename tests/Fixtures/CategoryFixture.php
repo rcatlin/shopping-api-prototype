@@ -12,12 +12,18 @@ class CategoryFixture implements FixtureInterface
     private $children;
     private $name;
     private $parent;
+    private $products;
 
-    public function __construct($name, Category $parent = null, ArrayCollection $children = null)
-    {
+    public function __construct(
+        $name,
+        Category $parent = null,
+        ArrayCollection $children = null,
+        ArrayCollection $products = null
+    ) {
         $this->name = $name;
         $this->parent = $parent;
         $this->children = ($children === null) ? new ArrayCollection() : $children;
+        $this->products = ($products === null) ? new ArrayCollection() : $products;
     }
 
     /**
@@ -32,6 +38,7 @@ class CategoryFixture implements FixtureInterface
         $category->setChildren($this->children);
         $category->setName($this->name);
         $category->setParent($this->parent);
+        $category->setProducts($this->products);
 
         $manager->persist($category);
         $manager->flush();

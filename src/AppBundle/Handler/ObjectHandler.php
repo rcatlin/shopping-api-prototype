@@ -3,7 +3,6 @@
 namespace AppBundle\Handler;
 
 use AppBundle\ValidatesEntity;
-use Assert\Assertion;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\EntityRepository;
@@ -151,6 +150,8 @@ class ObjectHandler
             $object = $this->objectManager->merge($object);
             $this->objectManager->flush();
         } catch (\Exception $exception) {
+            var_dump($exception->getMessage());
+            var_export($exception->getTraceAsString());
             throw new PersistenceException();
         }
 

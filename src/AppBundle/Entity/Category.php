@@ -100,6 +100,23 @@ class Category implements IdentifiableInterface
     private $children;
 
     /**
+     * @var ArrayCollection
+     *
+     * @ORM\OneToMany(
+     *     targetEntity="AppBundle\Entity\Product",
+     *     mappedBy="category"
+     * )
+     *
+     * @Serializer\Expose()
+     * @Serializer\Groups({"products"})
+     * @Serializer\MaxDepth(1)
+     * @Serializer\Accessor(
+     *     setter="setProducts"
+     * )
+     */
+    private $products;
+
+    /**
      * Get Id
      *
      * @return Uuid
@@ -176,6 +193,45 @@ class Category implements IdentifiableInterface
     public function getParent()
     {
         return $this->parent;
+    }
+
+    public function setProducts(ArrayCollection $products = null)
+    {
+        if ($products !== null) {
+            foreach ($products as $product) {
+                $product->setCategory($this);
+            }
+        }
+
+        $this->products = $products;
+
+        return $this;
+    }
+
+    public function addProduct(Product $product)
+    {
+        if ($this->products === null) {
+            $this->products = new ArrayCollection([$product]);
+
+            return $this;
+        }
+
+        if (!$this->products->contains($product)) {
+            $this->products->add($product);
+
+            return $this;
+        }
+
+        return $this;
+    }
+
+    public function removeProduct(Product $product)
+    {
+        if ($this->products !== null && $this->products->contains($product)) {
+            $this->products->contains($product);
+        }
+
+        return $this;
     }
 }
 

@@ -2,7 +2,6 @@
 
 namespace Tests\Functional\AppBundle\Controller;
 
-use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\Uuid;
 use Tests\AssertsArrayHasKeys;
 use Tests\Fixtures\ProductFixture;

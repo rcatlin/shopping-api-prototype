@@ -33,6 +33,21 @@ class Product implements IdentifiableInterface
     private $id;
 
     /**
+     * @var Category|null
+     *
+     * @ORM\ManyToOne(
+     *     targetEntity="AppBundle\Entity\Category",
+     *     inversedBy="products",
+     *     cascade={"PERSIST"}
+     * )
+     *
+     * @Serializer\Expose()
+     * @Serializer\Groups({"category"})
+     * @Serializer\MaxDepth(1)
+     */
+    private $category;
+
+    /**
      * @var string
      *
      * @Assert\NotBlank(message="Name should not be blank.")
@@ -106,6 +121,24 @@ class Product implements IdentifiableInterface
     public function getId()
     {
         return $this->id;
+    }
+
+    public function setCategory(Category $category = null)
+    {
+        if ($this->category !== null) {
+            $this->category->removeProduct($this);
+        }
+
+        $this->category = $category;
+
+        if ($this->category !== null) {
+            $this->category->addProduct($this);
+        }
+    }
+
+    public function getCategory()
+    {
+        return $this->category;
     }
 
     /**
