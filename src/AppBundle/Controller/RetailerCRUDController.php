@@ -224,13 +224,12 @@ class RetailerCRUDController extends FOSRestController
             return $this->renderJson(204);
         }
 
-        $serialized = [];
-        $context = $this->getSerializationContextFromRequest($request);
-        foreach ($retailers as $retailer) {
-            $serialized[] = $this->serializer->toArray($retailer, $context);
-        }
-
-        return $this->renderJson(200, ['result' => $serialized]);
+        return $this->renderJson(200, [
+            'result' => $this->serializer->toArray(
+                $retailers,
+                $this->getSerializationContextFromRequest($request)
+            ),
+        ]);
     }
 
     /**
@@ -264,6 +263,46 @@ class RetailerCRUDController extends FOSRestController
     {
         return $this->renderJson(200, [
             'result' => $this->serializer->toArray($retailer,
+                $this->getSerializationContextFromRequest($request)
+            ),
+        ]);
+    }
+
+    /**
+     * @Route("/{uuid}", name="api_partially_update_retailer")
+     * @Method({"PATCH"})
+     *
+     * @ParamConverter(
+     *     "retailer",
+     *     class="AppBundle\Entity\Retailer",
+     *     options={
+     *         "mapping": {"uuid": "id"}
+     *     }
+     * )
+     *
+     * @param Request $request
+     * @param Retailer $retailer
+     *
+     * @return Response
+     */
+    public function updateRetailer(Request $request, Retailer $retailer)
+    {
+        try {
+            $retailer = $this->handler->patch($retailer, $request->getContent());
+        } catch (PersistenceException $exception) {
+            return $this->renderJson(500, [
+                'errors' => $exception->getMessage(),
+            ]);
+        }
+
+        $errors = $this->validateEntity($this->validator, $retailer);
+        if (!empty($errors)) {
+            return $this->renderJson(400, ['errors' => $errors]);
+        }
+
+        return $this->renderJson(202, [
+            'result' => $this->serializer->toArray(
+                $retailer,
                 $this->getSerializationContextFromRequest($request)
             ),
         ]);

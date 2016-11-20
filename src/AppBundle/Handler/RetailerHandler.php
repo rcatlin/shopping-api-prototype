@@ -97,6 +97,34 @@ class RetailerHandler
     }
 
     /**
+     * @param Retailer $retailer
+     * @param string $data
+     *
+     * @return Retailer
+     *
+     * @throws PersistenceException
+     */
+    public function patch(Retailer $retailer, $data)
+    {
+        /** @var Retailer $retailer */
+        $retailer = $this->serializer->deserialize(
+            $data,
+            'AppBundle\Entity\Retailer',
+            'json',
+            (new DeserializationContext())->setAttribute('target', $retailer)
+        );
+
+        try {
+            $retailer = $this->objectManager->merge($retailer);
+            $this->objectManager->flush();
+        } catch (\Exception $exception) {
+            throw new PersistenceException();
+        }
+
+        return $retailer;
+    }
+
+    /**
      * @param string $data
      *
      * @return Retailer
