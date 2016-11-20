@@ -67,7 +67,7 @@ class CategoryCRUDController extends ObjectCRUDController
 
     /**
      * @Route("/{uuid}", name="api_edit_category")
-     * @Method({"POST"})
+     * @Method({"PUT"})
      *
      * @ParamConverter(
      *     "category",
