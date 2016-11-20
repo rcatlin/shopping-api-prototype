@@ -6,7 +6,6 @@ use AppBundle\ValidatesEntity;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\EntityRepository;
-use Exception\InvalidFormException;
 use Exception\PersistenceException;
 use Exception\Serializer\Construction\ObjectNotConstructedException;
 use Exception\ValidationException;
@@ -152,7 +151,6 @@ class ObjectHandler
      *
      * @return object
      *
-     * @throws InvalidFormException
      * @throws ObjectNotConstructedException
      * @throws PersistenceException
      * @throws ValidationException
@@ -181,7 +179,6 @@ class ObjectHandler
      *
      * @throws EntityNotFoundException
      * @throws InvalidArgumentException
-     * @throws InvalidFormException
      * @throws ObjectNotConstructedException
      * @throws PersistenceException
      */
