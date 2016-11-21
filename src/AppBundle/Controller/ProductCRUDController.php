@@ -175,6 +175,16 @@ class ProductCRUDController extends AbstractObjectCRUDController
     }
 
     /**
+     * @ApiDoc(
+     *     resource=true,
+     *     description="Partially Update a Product by UUID",
+     *     statusCodes={
+     *         200="Product was successfully updated and changes were persisted",
+     *         400="Bad Request Data",
+     *         500="Server encountered an error updating Product or persisting changes"
+     *     }
+     * )
+     *
      * @Route("/{uuid}", name="api_partial_update_product")
      * @Method({"PATCH"})
      *

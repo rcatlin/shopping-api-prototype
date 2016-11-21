@@ -178,6 +178,16 @@ class RetailerCRUDController extends AbstractObjectCRUDController
     }
 
     /**
+     * @ApiDoc(
+     *     resource=true,
+     *     description="Partially Update a Retailer by UUID",
+     *     statusCodes={
+     *         200="Retailer was successfully updated and changes were persisted",
+     *         400="Bad Request Data",
+     *         500="Server encountered an error updating Retailer or persisting changes"
+     *     }
+     * )
+     * 
      * @Route("/{uuid}", name="api_partial_update_retailer")
      * @Method({"PATCH"})
      *

@@ -7,6 +7,7 @@ use AppBundle\Handler\ObjectHandler;
 use FOS\RestBundle\Controller\Annotations\Route;
 use JMS\DiExtraBundle\Annotation as DI;
 use JMS\Serializer\Serializer;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,6 +33,15 @@ class CategoryCRUDController extends AbstractObjectCRUDController
     }
 
     /**
+     * @ApiDoc(
+     *     "Create a New Category",
+     *     statusCodes={
+     *         201="Category was successfully created and persisted",
+     *         400="Bad Request Data",
+     *         500="Server encountered an error persisting the Category"
+     *     }
+     * )
+     *
      * @Route("", name="api_create_category")
      * @Method({"POST"})
      *
@@ -45,6 +55,15 @@ class CategoryCRUDController extends AbstractObjectCRUDController
     }
 
     /**
+     * @ApiDoc(
+     *     description="Deletes an Existing Category",
+     *     statusCodes={
+     *         204="Category was successfully deleted",
+     *         404="Category with given UUID not found",
+     *         500="Server encountered an error deleting the Category"
+     *     }
+     * )
+     *
      * @Route("/{uuid}", name="api_delete_category")
      * @Method({"DELETE"})
      *
@@ -66,6 +85,17 @@ class CategoryCRUDController extends AbstractObjectCRUDController
     }
 
     /**
+     * @ApiDoc(
+     *     resource=true,
+     *     description="Updates an Existing Category",
+     *     statusCodes={
+     *         201="Category was successfully modified and changes were persisted",
+     *         400="Invalid Category Data or Bad UUID",
+     *         404="Category with given UUID not found.",
+     *         500="Server encountered an error saving the Category changes"
+     *     }
+     * )
+     *
      * @Route("/{uuid}", name="api_edit_category")
      * @Method({"PUT"})
      *
@@ -88,6 +118,16 @@ class CategoryCRUDController extends AbstractObjectCRUDController
     }
 
     /**
+     * @ApiDoc(
+     *     resource=true,
+     *     description="Retrieve a Category by UUID",
+     *     statusCodes={
+     *         200="Category with given UUID found",
+     *         400="Invalid UUID provided",
+     *         404="Category was not found given the UUID"
+     *     }
+     * )
+     *
      * @Route("/{uuid}", name="api_get_category")
      * @Method({"GET"})
      *
@@ -110,6 +150,18 @@ class CategoryCRUDController extends AbstractObjectCRUDController
     }
 
     /**
+     * @ApiDoc(
+     *     description="Get a List of Categoriess",
+     *     filters={
+     *          {"name"="limit", "dataType"="integer"},
+     *          {"name"="offset", "dataType"="integer"}
+     *     },
+     *     statusCodes={
+     *          200="A List of Categories were retrieved.",
+     *          204="No Categories were found and no content was returned."
+     *     }
+     * )
+     *
      * @Route("", name="api_list_categories")
      * @Method({"GET"})
      *
@@ -123,6 +175,16 @@ class CategoryCRUDController extends AbstractObjectCRUDController
     }
 
     /**
+     * @ApiDoc(
+     *     resource=true,
+     *     description="Partially Update a Category by UUID",
+     *     statusCodes={
+     *         200="Category was successfully updated and changes were persisted",
+     *         400="Bad Request Data",
+     *         500="Server encountered an error updating Category or persisting changes"
+     *     }
+     * )
+     *
      * @Route("/{uuid}", name="api_partial_update_category")
      * @Method({"PATCH"})
      *
