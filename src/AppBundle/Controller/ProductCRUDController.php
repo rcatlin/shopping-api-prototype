@@ -35,6 +35,7 @@ class ProductCRUDController extends AbstractObjectCRUDController
      * @ApiDoc(
      *     resource=true,
      *     description="Creates a New Product",
+     *     section="Product",
      *     statusCodes={
      *         201="Product was successfully created and persisted",
      *         400="Bad Request Data",
@@ -57,6 +58,7 @@ class ProductCRUDController extends AbstractObjectCRUDController
     /**
      * @ApiDoc(
      *     description="Deletes an Existing Product",
+     *     section="Product",
      *     statusCodes={
      *         204="Product was successfully deleted",
      *         404="Product with given UUID not found",
@@ -88,6 +90,7 @@ class ProductCRUDController extends AbstractObjectCRUDController
      * @ApiDoc(
      *     resource=true,
      *     description="Updates an Existing Product",
+     *     section="Product",
      *     statusCodes={
      *         201="Product was successfully modified and changes were persisted",
      *         400="Invalid Product Data or Bad UUID",
@@ -124,6 +127,7 @@ class ProductCRUDController extends AbstractObjectCRUDController
      *          {"name"="limit", "dataType"="integer"},
      *          {"name"="offset", "dataType"="integer"}
      *     },
+     *     section="Product",
      *     statusCodes={
      *          200="A List of Products were retrieved.",
      *          204="No products were found and no content was returned."
@@ -146,6 +150,7 @@ class ProductCRUDController extends AbstractObjectCRUDController
      * @ApiDoc(
      *     resource=true,
      *     description="Retrieve a Product by UUID",
+     *     section="Product",
      *     statusCodes={
      *         200="Product with given UUID found",
      *         400="Invalid UUID provided",
@@ -178,6 +183,7 @@ class ProductCRUDController extends AbstractObjectCRUDController
      * @ApiDoc(
      *     resource=true,
      *     description="Partially Update a Product by UUID",
+     *     section="Product",
      *     statusCodes={
      *         200="Product was successfully updated and changes were persisted",
      *         400="Bad Request Data",

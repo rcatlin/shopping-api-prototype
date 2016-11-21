@@ -34,7 +34,8 @@ class CategoryCRUDController extends AbstractObjectCRUDController
 
     /**
      * @ApiDoc(
-     *     "Create a New Category",
+     *     description="Create a New Category",
+     *     section="Category",
      *     statusCodes={
      *         201="Category was successfully created and persisted",
      *         400="Bad Request Data",
@@ -57,6 +58,7 @@ class CategoryCRUDController extends AbstractObjectCRUDController
     /**
      * @ApiDoc(
      *     description="Deletes an Existing Category",
+     *     section="Category",
      *     statusCodes={
      *         204="Category was successfully deleted",
      *         404="Category with given UUID not found",
@@ -88,6 +90,7 @@ class CategoryCRUDController extends AbstractObjectCRUDController
      * @ApiDoc(
      *     resource=true,
      *     description="Updates an Existing Category",
+     *     section="Category",
      *     statusCodes={
      *         201="Category was successfully modified and changes were persisted",
      *         400="Invalid Category Data or Bad UUID",
@@ -121,6 +124,7 @@ class CategoryCRUDController extends AbstractObjectCRUDController
      * @ApiDoc(
      *     resource=true,
      *     description="Retrieve a Category by UUID",
+     *     section="Category",
      *     statusCodes={
      *         200="Category with given UUID found",
      *         400="Invalid UUID provided",
@@ -151,7 +155,8 @@ class CategoryCRUDController extends AbstractObjectCRUDController
 
     /**
      * @ApiDoc(
-     *     description="Get a List of Categoriess",
+     *     description="Get a List of Categories",
+     *     section="Category",
      *     filters={
      *          {"name"="limit", "dataType"="integer"},
      *          {"name"="offset", "dataType"="integer"}
@@ -178,6 +183,7 @@ class CategoryCRUDController extends AbstractObjectCRUDController
      * @ApiDoc(
      *     resource=true,
      *     description="Partially Update a Category by UUID",
+     *     section="Category",
      *     statusCodes={
      *         200="Category was successfully updated and changes were persisted",
      *         400="Bad Request Data",

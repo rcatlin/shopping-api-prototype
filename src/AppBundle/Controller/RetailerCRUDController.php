@@ -37,6 +37,7 @@ class RetailerCRUDController extends AbstractObjectCRUDController
      *     resource=true,
      *     description="Creates a New Retailer",
      *     input="AppBundle\Form\RetailerType",
+     *     section="Retailer",
      *     statusCodes={
      *         201="Retailer was successfully created and persisted",
      *         400="Invalid Retailer Data",
@@ -59,6 +60,7 @@ class RetailerCRUDController extends AbstractObjectCRUDController
     /**
      * @ApiDoc(
      *     description="Deletes an Existing Retailer",
+     *     section="Retailer",
      *     statusCodes={
      *         204="Retailer successfully deleted",
      *         404="Retailer not found",
@@ -91,6 +93,7 @@ class RetailerCRUDController extends AbstractObjectCRUDController
      *     resource=true,
      *     description="Updates an Existing Retailer",
      *     input="AppBundle\Form\RetailerType",
+     *     section="Retailer",
      *     statusCodes={
      *         201="Retailer was successfully modified and changes were persisted",
      *         400="Invalid Retailer Data or Bad UUID",
@@ -127,6 +130,7 @@ class RetailerCRUDController extends AbstractObjectCRUDController
      *          {"name"="limit", "dataType"="integer"},
      *          {"name"="offset", "dataType"="integer"}
      *     },
+     *     section="Retailer",
      *     statusCodes={
      *          200="A List of Retailers were retrieved.",
      *          204="No Retailers were found and no content was returned."
@@ -149,6 +153,7 @@ class RetailerCRUDController extends AbstractObjectCRUDController
      * @ApiDoc(
      *     resource=true,
      *     description="Retrieve a Retailer by UUID",
+     *     section="Retailer",
      *     statusCodes={
      *         200="Retailer with given UUID found",
      *         400="Invalid UUID provided",
@@ -181,6 +186,7 @@ class RetailerCRUDController extends AbstractObjectCRUDController
      * @ApiDoc(
      *     resource=true,
      *     description="Partially Update a Retailer by UUID",
+     *     section="Retailer",
      *     statusCodes={
      *         200="Retailer was successfully updated and changes were persisted",
      *         400="Bad Request Data",
